@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>07 google ai studio</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 720px; margin: 0 auto; padding: 40px 20px; color: #1a1a1a; line-height: 1.7; }
+  h1 { font-size: 1.8em; margin: 1em 0 0.5em; }
+  h2 { font-size: 1.4em; margin: 1.5em 0 0.5em; color: #333; }
+  h3 { font-size: 1.2em; margin: 1.2em 0 0.4em; color: #444; }
+  p { margin: 0.8em 0; }
+  blockquote { border-left: 3px solid #2563eb; padding: 0.5em 1em; margin: 1em 0; background: #f8f9fa; color: #555; }
+  pre { background: #1e1e1e; color: #d4d4d4; padding: 1em; border-radius: 6px; overflow-x: auto; margin: 1em 0; }
+  code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.9em; }
+  li { margin: 0.4em 0; margin-left: 1.5em; }
+  hr { border: none; border-top: 1px solid #e5e5e5; margin: 2em 0; }
+  img { max-width: 100%; border-radius: 6px; margin: 1em 0; }
+  figure { margin: 1.5em 0; }
+  figcaption { color: #888; font-size: 0.85em; margin-top: 0.3em; }
+  .nav { margin-bottom: 2em; }
+  .nav a { color: #2563eb; text-decoration: none; }
+  .nav a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="nav"><a href="index.html">← Zurück zur Übersicht</a></div>
+<p>If chat interfaces are a screwdriver, Google AI Studio is a workshop. It&#x27;s free, surprisingly powerful, and almost nobody on the team has explored it yet. This article is about why that&#x27;s worth changing and what you can actually do with it.</p>
+<h2>Why the Chat Interface Isn&#x27;t Enough</h2>
+<p>Standard chat is great for quick tasks. But if you&#x27;re trying to develop a prompt that you&#x27;ll use repeatedly, or trying to understand why the same prompt produces wildly different results sometimes, a chat window doesn&#x27;t give you the tools to investigate or iterate systematically.</p>
+<p>Think of it like the difference between writing code in Notepad versus in an IDE. The code is the same, but the environment makes a fundamental difference in how effectively you can work. Prompting playgrounds give you visibility, control, and collaboration features that plain chat doesn&#x27;t.</p>
+<p>Google AI Studio is the most capable free option available. It works with Google&#x27;s Gemini models and has features that even paid tools don&#x27;t always offer.</p>
+<h2>The Feature That Changes Everything: Compare Mode</h2>
+<p>Compare mode lets you run the same prompt through two different models (or the same model with different settings) side by side. This is immediately useful.</p>
+<p>Want to know whether a higher or lower temperature produces better test cases for your use case? Set up a comparison. Want to see whether Gemini 2.5 Pro&#x27;s more detailed output is worth the extra seconds over Gemini Flash? Run them side by side. You get both outputs simultaneously, and you can see the differences without copying and pasting between tabs.</p>
+<p>For the Council of LLMs approach covered in article #1, this is a faster way to get multiple perspectives, especially when you want to compare outputs from the same family of models with different parameters.</p>
+<h2>System Instructions: Define the AI&#x27;s Persona</h2>
+<p>On the right side of the AI Studio interface, you can set System Instructions. This is persistent context that frames every response in a conversation. It&#x27;s where you set the AI&#x27;s role, tone, and behavioral constraints without repeating it in every message.</p>
+<p>This is the same mechanism that powers custom assistants (article #4), but here you can edit it live, see exactly what&#x27;s there, and tweak it as you refine your approach. It&#x27;s a great place to experiment with instructions before committing them to a more permanent assistant.</p>
+<pre><code class="plain text">
+You are an expert software tester specializing in requirements analysis. When given a requirement, always identify testability issues before suggesting test cases. Use clear, numbered lists for test cases. Keep responses concise. No padding.
+</code></pre>
+<h2>Token Count and Temperature: Visible Controls</h2>
+<p>Two settings are worth understanding:</p>
+<h3>Temperature</h3>
+<p>Controls how creative or conservative the output is. The slider is visible and adjustable in AI Studio, which makes it easy to experiment. For precise, factual work (test cases, requirements analysis), keep it at 0.3 or lower. For brainstorming and generating diverse ideas, 0.7 to 1.0 gives you more variation. As covered in article #5, lower temperature also reduces hallucinations.</p>
+<h3>Token count</h3>
+<p>AI Studio shows you the token count of your prompt in real time. This is useful for understanding the cost of your prompts (if you&#x27;re using the paid API) and for staying within context limits. A very long prompt might get truncated or cause the model to lose track of earlier context. Seeing the count helps you manage this.</p>
+<h2>Build Apps: Prompts That Do Something</h2>
+<p>The most underrated feature in AI Studio is &quot;Build Apps&quot;. Instead of a chat, you write a prompt and AI Studio converts it into a working web application that anyone can use. No coding required.</p>
+<p>A practical example for testers: write a detailed prompt describing a test data generator, what fields it should create, in what format, and for what type of feature. AI Studio builds an interactive app with a form where you can input parameters and download the results. You&#x27;ve turned a prompt into a tool your whole team can use.</p>
+<pre><code class="plain text">
+Act as a software testing expert. Create a test data generator for user registration forms.
+Let the user specify:
+- Number of records
+- Types of edge cases to include (invalid emails, special characters, boundary lengths)
+- Output format (CSV or JSON)
+
+Generate realistic, varied test data that covers both happy path and edge cases.
+</code></pre>
+<p>The app AI Studio generates from this won&#x27;t be production-grade, but it&#x27;s often good enough for internal tooling, and it takes minutes, not hours.</p>
+<p>Two more features worth knowing about: Stream Real Time mode (in the left menu) lets you interact with Gemini using audio and video input. You can speak your prompts instead of typing, share your webcam, or share your screen for live analysis of whatever you&#x27;re looking at. Generate Media gives you image, audio, and video generation from the same interface, with access to several different models. Neither is something you&#x27;ll use every day for testing, but the screen-sharing capability in particular is useful for quick live walkthroughs.</p>
+<h2>Sharing and Team Prompt Libraries</h2>
+<p>Prompts in AI Studio can be saved and shared with a link. You can set permissions: read-only or editable. This is the foundation for building a team prompt library: a shared collection of prompts that work well for specific tasks.</p>
+<p>Maintaining a library like this doesn&#x27;t require much overhead. When you find a prompt that produces consistently good output for a common task, save it. Add a brief note about when to use it. Share the link. Over time, the team stops reinventing the wheel on prompting and builds on what already works.</p>
+<blockquote>💡 AI Studio is free and available at aistudio.google.com. No subscription required. You&#x27;ll need a Google account. The paid tier (Gemini API) is needed for high-volume use, but for exploration and team tooling, the free tier is plenty.</blockquote>
+<p>Google AI Studio isn&#x27;t the only playground out there. Anthropic Console (console.anthropic.com) offers similar capabilities for Claude models, including system prompts, temperature controls, and prompt iteration. OpenAI Playground provides the same for GPT models. The concepts covered here, system instructions, temperature tuning, compare mode, transfer directly to these other environments. Start with AI Studio because it&#x27;s free and full-featured, then explore the others as your needs grow.</p>
+<h2>Your Exercise</h2>
+<p>Open Google AI Studio this week and work through all three of these. They&#x27;ll take about 30 minutes total and give you a much clearer picture of what the tool can actually do.</p>
+<li>Go to aistudio.google.com and run a prompt you use regularly. Then enable Compare mode and run it with a different temperature setting or model. Look for meaningful differences in the output.</li>
+<li>Try the Build Apps feature with a simple testing task: a bug report formatter, a test case template generator, or a checklist builder. Share the resulting app link with one other person on the team.</li>
+<li>Set up System Instructions with your testing context and preferences. Save the session. Next time you need that kind of help, come back to this session instead of starting from scratch in a chat window.</li>
+
+<div class="nav" style="margin-top:3em; padding-top:1em; border-top:1px solid #e5e5e5;"><a href="index.html">← Zurück zur Übersicht</a></div>
+</body>
+</html>
