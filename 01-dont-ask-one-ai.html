@@ -75,9 +75,16 @@
 
 <h2>How to Run a Council</h2>
 <p>The workflow is simpler than it sounds. Start by writing a clear, detailed prompt. Something like this:</p>
-<pre><code>Act as an expert in [your domain]. I need to [describe task].
-The constraints are: [list key constraints].
-Also flag the things most people forget, and highlight the biggest risks.</code></pre>
+<pre><code>Act as an expert in [your domain].
+I need to [describe task].
+
+The constraints are:
+- [constraint 1]
+- [constraint 2]
+- [constraint 3]
+
+Also flag the things most people forget,
+and highlight the biggest risks.</code></pre>
 <p>Now run this in ChatGPT, Claude, and optionally Gemini. Don't tweak the prompt between runs. You want comparability. Then read all three outputs and look for:</p>
 <ul>
 <li><strong>Ideas that appear in all three:</strong> these are probably important</li>
@@ -85,16 +92,38 @@ Also flag the things most people forget, and highlight the biggest risks.</code>
 <li><strong>Contradictions:</strong> these are worth investigating further</li>
 </ul>
 <p>You're the curator. The AI generates, you judge. That's the division of labor that works.</p>
-<p>If you want to run a council without switching between browser tabs, two tools make it easier. LM Arena (lmarena.ai) lets you compare any two LLMs side by side with the same prompt. AI Camp lets you send a prompt to multiple LLMs in sequence within a single interface. Both are free and cut down the friction of running comparisons.</p>
+<p>If you want to run a council without switching between browser tabs, <a href="https://lmarena.ai">LM Arena</a> (lmarena.ai) lets you compare any two LLMs side by side with the same prompt. It's free and cuts down the friction of running comparisons.</p>
 
 <h2>Roles You Can Assign</h2>
 <p>You can make the council even more useful by assigning different roles to different models (or different conversations with the same model):</p>
 <ul>
 <li><strong>Generator:</strong> brainstorm as many ideas as possible, no filtering</li>
+</ul>
+<pre><code>Act as a creative brainstormer.
+Generate as many ideas as possible for [your task].
+Don't filter or judge — quantity over quality.
+I'll curate afterwards.</code></pre>
+<ul>
 <li><strong>Critic:</strong> find gaps and weaknesses in a plan you already have</li>
+</ul>
+<pre><code>Act as a critical reviewer.
+Here is my current approach: [paste your approach].
+Find the weaknesses, blind spots, and things I'm missing.
+Be honest — I want to improve this, not hear that it's great.</code></pre>
+<ul>
 <li><strong>Devil's Advocate:</strong> argue why the current approach is wrong</li>
+</ul>
+<pre><code>Act as a devil's advocate.
+I'm planning to [describe your plan].
+Argue against it. Tell me why this will fail.
+What am I not seeing?</code></pre>
+<ul>
 <li><strong>Researcher:</strong> look up known issues with similar situations (enable web search)</li>
 </ul>
+<pre><code>Act as a researcher with web access.
+I'm working on [describe topic].
+Find known issues, common pitfalls, and lessons learned
+from similar situations. Cite your sources.</code></pre>
 <p>Assigning roles isn't just a neat trick. It changes the model's behavior meaningfully. Ask Claude to be a critic and it will find things it wouldn't surface if you just asked for ideas.</p>
 
 <blockquote>💡 One important note on data privacy: don't paste real customer data, internal code, or anything confidential into public AI tools. Anonymize or use synthetic examples. When in doubt, ask.</blockquote>
