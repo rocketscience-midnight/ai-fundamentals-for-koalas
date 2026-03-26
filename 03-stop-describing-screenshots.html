@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>03 stop describing screenshots</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 720px; margin: 0 auto; padding: 40px 20px; color: #1a1a1a; line-height: 1.7; }
+  h1 { font-size: 1.8em; margin: 1em 0 0.5em; }
+  h2 { font-size: 1.4em; margin: 1.5em 0 0.5em; color: #333; }
+  h3 { font-size: 1.2em; margin: 1.2em 0 0.4em; color: #444; }
+  p { margin: 0.8em 0; }
+  blockquote { border-left: 3px solid #2563eb; padding: 0.5em 1em; margin: 1em 0; background: #f8f9fa; color: #555; }
+  pre { background: #1e1e1e; color: #d4d4d4; padding: 1em; border-radius: 6px; overflow-x: auto; margin: 1em 0; }
+  code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.9em; }
+  li { margin: 0.4em 0; margin-left: 1.5em; }
+  hr { border: none; border-top: 1px solid #e5e5e5; margin: 2em 0; }
+  img { max-width: 100%; border-radius: 6px; margin: 1em 0; }
+  figure { margin: 1.5em 0; }
+  figcaption { color: #888; font-size: 0.85em; margin-top: 0.3em; }
+  .nav { margin-bottom: 2em; }
+  .nav a { color: #2563eb; text-decoration: none; }
+  .nav a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="nav"><a href="index.html">← Zurück zur Übersicht</a></div>
+<p>Most people use AI purely by typing text. That&#x27;s fine, but it&#x27;s leaving a lot on the table, especially for testers whose work is inherently visual. AI tools today can understand images, process audio, and in some cases watch your screen in real time. Here&#x27;s how to actually use that.</p>
+<h2>A Picture Is Worth More Than You Think</h2>
+<p>When you upload a screenshot to an AI, you&#x27;re not just showing it a picture. You&#x27;re giving it roughly 2,000 to 5,000 tokens of information in a format that often conveys more than the equivalent amount of text. Describing a UI bug in words is harder, slower, and less accurate than just screenshotting it and asking the AI to tell you what&#x27;s wrong.</p>
+<p>This is genuinely practical for testing. Say you&#x27;re looking at a UI that has multiple issues: layout problems, accessibility concerns, inconsistent spacing, a button that looks off. Writing all of that out in text would take several minutes and still miss things. Uploading the screenshot and asking takes seconds.</p>
+<pre><code class="plain text">
+Act as a testing expert. Review this screenshot and report any accessibility, usability, and UI issues you notice. Be specific. Mention which elements are affected and why it&#x27;s a problem.
+</code></pre>
+<p>You&#x27;ll get a structured list of issues that would have taken considerably longer to find and articulate yourself. Not because the AI sees things you can&#x27;t. It doesn&#x27;t. But because it processes the whole image at once without the fatigue and tunnel vision that come from staring at the same screen for an hour.</p>
+<h2>What Images Are Good For</h2>
+<p>In a testing context, image prompting shines in a few specific situations:</p>
+<h3>Issue detection</h3>
+<p>Upload a screenshot and ask for a review. Works especially well for accessibility issues (contrast, element sizing, label placement), visual regressions, and anything that&#x27;s hard to articulate but obvious when you see it.</p>
+<h3>Comparing states</h3>
+<p>Upload two screenshots, say, the same screen before and after a deploy, and ask the AI to describe the differences. Good for regression checks when you don&#x27;t have automated visual testing set up.</p>
+<h3>Design validation</h3>
+<p>Share a wireframe or mockup alongside a screenshot of the implemented feature and ask whether the implementation matches the design. Faster than going through Figma side by side manually.</p>
+<h3>Bug report descriptions</h3>
+<p>Upload a screenshot of the bug and ask the AI to write a description for your bug report. More consistent than writing it yourself, and faster.</p>
+<h2>Voice: Underused and Actually Useful</h2>
+<p>Typing is slower than speaking. If you find yourself with a complex testing scenario to describe, like edge cases, a long sequence of steps, or a convoluted requirement, consider using voice input instead.</p>
+<p>ChatGPT&#x27;s Advanced Voice Mode lets you have an actual conversation with the AI and go back and forth in real time. Claude has voice input in its mobile app. Even just using your phone&#x27;s voice-to-text to dictate a prompt and paste it works surprisingly well.</p>
+<p>This is also worth noting for voice testing specifically: if you&#x27;re testing a voice-based feature or an application with audio components, you can use AI tools that process audio to help you analyze and test those components, not just to talk to the AI faster.</p>
+<h2>Screen Sharing and Live Analysis</h2>
+<p>Microsoft Copilot has a &quot;Vision&quot; mode that lets you share your screen and have a live conversation about what&#x27;s on it. You can navigate to a page and ask &quot;What is this article about?&quot; or &quot;Can you summarize what you see?&quot; without copy-pasting anything.</p>
+<p>This is still early-stage and not perfect, but it&#x27;s useful for quick exploration. If you&#x27;re testing a content-heavy page and want a quick read on whether the content makes sense to a fresh pair of eyes, this kind of real-time visual analysis can be genuinely helpful.</p>
+<blockquote>💡 One limitation worth knowing: AI vision isn&#x27;t infallible. It can miss things, misread text, or misinterpret visual hierarchy. Treat AI-generated issue lists as a first pass to augment your own review, not as a replacement for it.</blockquote>
+<h2>Your Exercise</h2>
+<p>Three concrete assignments. Do at least one before moving on to the next article.</p>
+<li>The next time you find a visual bug or a confusing UI, take a screenshot and paste it into Claude or ChatGPT with the prompt: &quot;Act as a tester. What issues do you see in this screenshot?&quot; Compare what it finds to what you noticed.</li>
+<li>Try voice input for your next complex prompt. Use ChatGPT&#x27;s voice mode or just dictate via your phone. See if it&#x27;s faster than typing.</li>
+<li>If you have a UI you&#x27;ve been testing for a while, try uploading a screenshot and asking for an accessibility review specifically. You might be surprised what it flags.</li>
+
+<div class="nav" style="margin-top:3em; padding-top:1em; border-top:1px solid #e5e5e5;"><a href="index.html">← Zurück zur Übersicht</a></div>
+</body>
+</html>
