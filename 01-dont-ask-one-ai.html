@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>01 dont ask one ai</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 720px; margin: 0 auto; padding: 40px 20px; color: #1a1a1a; line-height: 1.7; }
+  h1 { font-size: 1.8em; margin: 1em 0 0.5em; }
+  h2 { font-size: 1.4em; margin: 1.5em 0 0.5em; color: #333; }
+  h3 { font-size: 1.2em; margin: 1.2em 0 0.4em; color: #444; }
+  p { margin: 0.8em 0; }
+  blockquote { border-left: 3px solid #2563eb; padding: 0.5em 1em; margin: 1em 0; background: #f8f9fa; color: #555; }
+  pre { background: #1e1e1e; color: #d4d4d4; padding: 1em; border-radius: 6px; overflow-x: auto; margin: 1em 0; }
+  code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.9em; }
+  li { margin: 0.4em 0; margin-left: 1.5em; }
+  hr { border: none; border-top: 1px solid #e5e5e5; margin: 2em 0; }
+  img { max-width: 100%; border-radius: 6px; margin: 1em 0; }
+  figure { margin: 1.5em 0; }
+  figcaption { color: #888; font-size: 0.85em; margin-top: 0.3em; }
+  .nav { margin-bottom: 2em; }
+  .nav a { color: #2563eb; text-decoration: none; }
+  .nav a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="nav"><a href="index.html">← Zurück zur Übersicht</a></div>
+<p>If you test alone, you know the trap: you&#x27;ve been staring at the same requirements for two days and your test ideas start feeling circular. The &quot;Council of LLMs&quot; approach fixes this. Not by replacing your thinking, but by giving you a room full of sparring partners who never get tired, never judge you, and each see things a little differently.</p>
+<h2>Why Different Models Think Differently</h2>
+<p>Every LLM was trained on different data, with different objectives, and different fine-tuning. ChatGPT tends to be thorough and tool-oriented. Claude tends to be crisp, structured, and good at reasoning. Gemini is well-connected to Google&#x27;s knowledge graph and useful for research. These aren&#x27;t marketing claims. You&#x27;ll actually see different outputs when you run the same prompt through each.</p>
+<p>The point isn&#x27;t to pick a winner. It&#x27;s to collect perspectives. One model might surface a risk you hadn&#x27;t considered. Another might challenge an assumption the first one made. When you synthesize their outputs yourself, the result is often better than any single response.</p>
+<h2>Your Toolkit</h2>
+<p>Our team has access to a few things worth knowing about:</p>
+<li>Claude Pro (browser at claude.ai + Claude Code CLI): great for reasoning, structured analysis, and longer context. The CLI is powerful for technical work. This is our newest addition as of Monday.</li>
+<li>ChatGPT Pro: well-rounded, strong with tool use, good at generating diverse ideas. Many of you already use this.</li>
+<li>Google AI Studio (aistudio.google.com): more on this in article #7, but it&#x27;s free, feature-rich, and lets you compare models side by side. Think of it as a power user interface for Gemini.</li>
+<li>Google Workspace Studio: AI tools integrated directly into Google Workspace apps like Docs, Sheets, and Gmail. A different product from Google AI Studio, which is a model experimentation playground. Workspace Studio is about bringing AI into the documents and workflows you already use.</li>
+<p>You don&#x27;t need to use all of them every time. But for decisions that matter, like designing a test strategy for a new feature, running the same prompt through two or three of them and comparing the outputs is genuinely useful.</p>
+<h2>One LLM, Many Interfaces</h2>
+<p>When you hear &quot;use multiple AI tools&quot;, the instinct is to think about switching between ChatGPT, Claude, and Gemini. That is a good start. But there is a layer most people miss: even within a single LLM, the interface you choose shapes what you get.</p>
+<p>Take Claude as an example. Three interfaces, three different experiences:</p>
+<li>Claude Web with Connectors: gives the model access to your email, Google Drive, and other services. Want a summary of your unread inbox? This is where you go.</li>
+<li>Claude Code (CLI and IDE integration): built for technical work. File operations, codebase questions, structured reasoning about code. It behaves more like an engineer and less like a chat assistant.</li>
+<li>Chrome Extension: works directly on whatever page you have open. Useful for quick analysis of what is in front of you, without switching context.</li>
+<p>Same underlying model, three meaningfully different experiences. The interface shapes the context, the defaults, and ultimately what the model focuses on.</p>
+<p>So your council does not have to be three different LLMs. It can also be three different modes of the same one. A productivity question might go to Claude Web with Connectors. A code review stays in Claude Code. A quick read of a page you are looking at goes to the extension. Picking the right interface for the right task is a skill in itself. Match the tool to the job.</p>
+<h2>How to Run a Council</h2>
+<p>The workflow is simpler than it sounds. Start by writing a clear, detailed prompt. Something like this:</p>
+<pre><code class="plain text">
+Act as an AI app testing expert. Suggest test ideas for an AI chatbot that handles customer support queries. The chatbot must respond within 2 seconds, supports English and Spanish, and escalates complex cases to human agents. Also flag the tests most people forget, and highlight the biggest risks.
+</code></pre>
+<p>Now run this in ChatGPT, Claude, and optionally Gemini. Don&#x27;t tweak the prompt between runs. You want comparability. Then read all three outputs and look for:</p>
+<li>Ideas that appear in all three: these are probably important</li>
+<li>Ideas that only appear in one: these might be the most valuable insights</li>
+<li>Contradictions: these are worth investigating further</li>
+<p>You&#x27;re the curator. The AI generates, you judge. That&#x27;s the division of labor that works.</p>
+<p>If you want to run a council without switching between browser tabs, two tools make it easier. LM Arena (lmarena.ai) lets you compare any two LLMs side by side with the same prompt. AI Camp lets you send a prompt to multiple LLMs in sequence within a single interface. Both are free and cut down the friction of running comparisons.</p>
+<h2>Roles You Can Assign</h2>
+<p>You can make the council even more useful by assigning different roles to different models (or different conversations with the same model):</p>
+<li>Generator: brainstorm as many test ideas as possible, no filtering</li>
+<li>Critic: find gaps and weaknesses in a test plan you already have</li>
+<li>Devil&#x27;s Advocate: argue why the current test approach is wrong</li>
+<li>Researcher: look up known issues with similar features (enable web search)</li>
+<p>Assigning roles isn&#x27;t just a neat trick. It changes the model&#x27;s behavior meaningfully. Ask Claude to be a critic and it will find things it wouldn&#x27;t surface if you just asked for test ideas.</p>
+<blockquote>💡 One important note on data privacy: don&#x27;t paste real customer data, internal code, or anything confidential into public AI tools. Anonymize or use synthetic examples. When in doubt, ask.</blockquote>
+<h2>Your Exercise</h2>
+<p>Here&#x27;s your assignment. Pick a feature you&#x27;re currently testing, something medium-complexity rather than trivial, and do these three things:</p>
+<li>Write one clear prompt describing what you need. Choose a focus: test ideas, risk assessment, or strategy critique.</li>
+<li>Run it in ChatGPT and Claude. Compare the outputs side by side. Note what differs.</li>
+<li>Try assigning the &quot;Critic&quot; role in one of them: &quot;Act as a critical reviewer and find the weaknesses in this test approach: [paste your current approach].&quot;</li>
+<p>You&#x27;ll spend maybe 20 minutes. You&#x27;ll likely come out with at least one test idea or risk you hadn&#x27;t considered. That&#x27;s the whole point.</p>
+
+<div class="nav" style="margin-top:3em; padding-top:1em; border-top:1px solid #e5e5e5;"><a href="index.html">← Zurück zur Übersicht</a></div>
+</body>
+</html>
