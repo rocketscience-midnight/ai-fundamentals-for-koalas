@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>08 from chat to coworker</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 720px; margin: 0 auto; padding: 40px 20px; color: #1a1a1a; line-height: 1.7; }
+  h1 { font-size: 1.8em; margin: 1em 0 0.5em; }
+  h2 { font-size: 1.4em; margin: 1.5em 0 0.5em; color: #333; }
+  h3 { font-size: 1.2em; margin: 1.2em 0 0.4em; color: #444; }
+  p { margin: 0.8em 0; }
+  blockquote { border-left: 3px solid #2563eb; padding: 0.5em 1em; margin: 1em 0; background: #f8f9fa; color: #555; }
+  pre { background: #1e1e1e; color: #d4d4d4; padding: 1em; border-radius: 6px; overflow-x: auto; margin: 1em 0; }
+  code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.9em; }
+  li { margin: 0.4em 0; margin-left: 1.5em; }
+  hr { border: none; border-top: 1px solid #e5e5e5; margin: 2em 0; }
+  img { max-width: 100%; border-radius: 6px; margin: 1em 0; }
+  figure { margin: 1.5em 0; }
+  figcaption { color: #888; font-size: 0.85em; margin-top: 0.3em; }
+  .nav { margin-bottom: 2em; }
+  .nav a { color: #2563eb; text-decoration: none; }
+  .nav a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="nav"><a href="index.html">← Zurück zur Übersicht</a></div>
+<p>Up until now, we&#x27;ve mostly talked about AI as something you ask questions and it answers. That model still works and you should keep using it. But there&#x27;s a shift happening in how AI is actually being deployed, and parts of it are already running in the tools sitting on your desk right now.</p>
+<h2>What Is Agentic AI?</h2>
+<p>Regular AI works roughly like a very well-read colleague who can only communicate in writing. You ask, it responds. The interaction starts and ends there. It works entirely from what it knows.</p>
+<p>Agentic AI is different. Instead of just answering, it can take actions. Browse a live website and read what&#x27;s actually on it today. Run a piece of code and report what happened. Call an external API and process the response. Chain multiple steps together - plan, act, observe, adjust, continue - all within a single task.</p>
+<p>Think of the difference between asking a colleague &quot;what does the current OWASP Top 10 look like?&quot; versus asking them to go look it up, compare it to last year&#x27;s version, and come back with a clear summary of what changed. The first is a question. The second is a task with real steps that require interacting with the world. Agentic AI can do the second kind.</p>
+<h2>What You Already Have Access To</h2>
+<p>ChatGPT Pro includes web browsing and a code interpreter. When you ask it to look something up, it actually opens a browser and reads real pages - not cached training data from two years ago, but live content. When you ask it to analyze a spreadsheet or write and run a script, it executes actual Python code and shows you the real output. These aren&#x27;t simulations. They&#x27;re real actions.</p>
+<p>Claude with tool use can browse the web, run code, and in the right configurations interact with external systems. Claude Code - the CLI version - can read and write files on your local machine, run terminal commands, and work through multi-step development tasks with a degree of autonomy that feels meaningfully different from a chat interface.</p>
+<p>Google AI Studio supports function calling - a structured way to define what capabilities the AI can use, and let it decide when to invoke them based on what you ask. This is how you&#x27;d start building AI that connects to real data sources.</p>
+<h2>The Building Blocks</h2>
+<p>Tool use is the ability for an AI model to call external capabilities - a web search engine, a code runner, a file system, a database. The model decides when a tool is needed based on your request, uses it, gets the result back, and incorporates that into its response. From your side, it often just looks like a smarter, more capable answer.</p>
+<p>Function calling is the more structured version. You or a developer defines what functions exist - &quot;get_ticket_status&quot;, &quot;query_test_database&quot;, &quot;check_api_endpoint&quot; - and the model can invoke them when relevant. This is the foundation for wiring AI to your actual systems, rather than the general-purpose ones that come built in.</p>
+<p>Multi-step reasoning ties it all together. An agentic AI doesn&#x27;t just respond once. It can plan a sequence of actions, execute the first step, look at what happened, decide what to do next, and keep going until the task is done. Or until something goes wrong, which is why human oversight still matters a lot.</p>
+<h2>Why This Matters for Testers Specifically</h2>
+<p>Agentic AI opens up the possibility of the AI actually interacting with the thing you&#x27;re testing. An AI that can query your staging API directly and tell you whether the response schema matches the spec. One that can parse your test report, cross-reference it with open Jira tickets, and flag anything that looks inconsistent. One that can take a set of test steps and actually execute them in a browser while logging what it observes.</p>
+<p>That&#x27;s not all available out of the box today - but the foundation is being built now. Knowing what&#x27;s coming helps you recognize it when it arrives, and ask smarter questions about how your team could use it.</p>
+<blockquote>🔌 One infrastructure term worth knowing: MCP, or Model Context Protocol. It&#x27;s an emerging standard that defines how AI models connect to external tools and data sources in a consistent way. If you hear people talking about &quot;MCP servers&quot; or &quot;AI integrations&quot; in the coming months, this is what they mean. You don&#x27;t need the technical details, just the concept.</blockquote>
+<h2>Reality Check: What Works Today vs. What&#x27;s Hype</h2>
+<p>Web browsing in ChatGPT and Claude? Works well, useful today, use it now. It&#x27;s especially good for anything where you need current information - recent security advisories, updated documentation, what a competitor&#x27;s feature actually does.</p>
+<p>Code execution in ChatGPT? Solid. Great for generating and immediately running scripts, analyzing files, doing calculations you don&#x27;t want to do manually.</p>
+<p>Claude Code? Powerful for developer workflows. Requires some comfort with the terminal to set up and use well. Worth exploring if you&#x27;re comfortable in that environment.</p>
+<p>Fully autonomous AI testing agents that can plan, execute, and verify test cases end-to-end without supervision? Still early. The demos look impressive. Reliability in real, messy environments is inconsistent. This is a space to watch, not deploy in production workflows yet.</p>
+<h2>A Stepping Stone You&#x27;ve Already Taken</h2>
+<p>If you experimented with building a custom assistant in article #4, you already touched the edge of this. A custom assistant with specific instructions, a defined persona, and knowledge of your project is a small step in the agentic direction. You&#x27;ve defined what the AI knows and how it should behave. The next step is giving that AI tools - the ability to act on what you&#x27;ve asked, not just respond to it.</p>
+<hr>
+<h2>Your Exercise</h2>
+<p>Open ChatGPT or Claude - whichever has web search or code execution enabled for your account. Give it a task that actually requires using a tool, not just recalling information from training.</p>
+<p>Option A (web search): &quot;Search the web for the current OWASP Top 10 and give me a clear summary of what changed compared to the previous version. Be specific about what moved up the list, what dropped off, and what&#x27;s newly included.&quot;</p>
+<p>Option B (code execution): &quot;Write a Python script that generates 50 realistic test users, each with a name, email address, age between 18 and 65, and a country selected from a realistic distribution. Then run it and show me the first 10 results.&quot;</p>
+<p>Watch what happens. Notice whether the model opens a browser, runs actual code, or retrieves real-time data. Compare that experience to asking the same question in a plain chat where no tools are available.</p>
+<blockquote>🔒 Remember: when using AI tools that browse the web or run code, be thoughtful about what you&#x27;re asking them to access or generate. Agentic tools have more reach than a standard chat - which is exactly why they&#x27;re useful, and why awareness matters.</blockquote>
+
+<div class="nav" style="margin-top:3em; padding-top:1em; border-top:1px solid #e5e5e5;"><a href="index.html">← Zurück zur Übersicht</a></div>
+</body>
+</html>
