@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>06 your feedback shapes ai</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 720px; margin: 0 auto; padding: 40px 20px; color: #1a1a1a; line-height: 1.7; }
+  h1 { font-size: 1.8em; margin: 1em 0 0.5em; }
+  h2 { font-size: 1.4em; margin: 1.5em 0 0.5em; color: #333; }
+  h3 { font-size: 1.2em; margin: 1.2em 0 0.4em; color: #444; }
+  p { margin: 0.8em 0; }
+  blockquote { border-left: 3px solid #2563eb; padding: 0.5em 1em; margin: 1em 0; background: #f8f9fa; color: #555; }
+  pre { background: #1e1e1e; color: #d4d4d4; padding: 1em; border-radius: 6px; overflow-x: auto; margin: 1em 0; }
+  code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.9em; }
+  li { margin: 0.4em 0; margin-left: 1.5em; }
+  hr { border: none; border-top: 1px solid #e5e5e5; margin: 2em 0; }
+  img { max-width: 100%; border-radius: 6px; margin: 1em 0; }
+  figure { margin: 1.5em 0; }
+  figcaption { color: #888; font-size: 0.85em; margin-top: 0.3em; }
+  .nav { margin-bottom: 2em; }
+  .nav a { color: #2563eb; text-decoration: none; }
+  .nav a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="nav"><a href="index.html">← Zurück zur Übersicht</a></div>
+<p>Those thumbs up/down buttons aren&#x27;t decoration. They&#x27;re how AI systems get better, and they&#x27;re how you train the AI to work the way you want. Understanding the feedback loop behind modern AI tools makes you a more effective user of them.</p>
+<h2>What RLHF Actually Is</h2>
+<p>RLHF stands for Reinforcement Learning from Human Feedback. The core idea: after an LLM generates a response, humans evaluate it. Those evaluations are used to update the model, rewarding patterns that got positive feedback and penalizing patterns that got negative feedback. Repeat this at scale, and the model gradually gets better at producing outputs that humans find useful.</p>
+<p>This is how ChatGPT, Claude, and Gemini were all trained and continue to be refined. When you click thumbs up or thumbs down, you&#x27;re contributing to that loop. Your individual click won&#x27;t reshape the model overnight, but patterns of feedback across many users do influence how these models behave over time.</p>
+<p>More immediately useful: the feedback you give within your own usage history shapes how that tool responds to you specifically. If you consistently downvote responses that are too verbose and upvote concise answers, the tool learns what you prefer.</p>
+<h2>When Thumbs Down Gets Interesting</h2>
+<p>Most people click thumbs down when they&#x27;re annoyed and then move on. The more useful approach is to actually tell the AI what was wrong. When you click thumbs down in ChatGPT, it asks for specifics: Was it factually incorrect? Did it not follow your instructions? Was the style wrong? Was there a memory issue?</p>
+<p>Each of these signals something different. &quot;Factually incorrect&quot; helps the model learn accuracy. &quot;Didn&#x27;t follow instructions&quot; helps it learn to be more literal. &quot;Style wrong&quot; helps calibrate the tone and format to your preferences.</p>
+<p>This is especially valuable for anything subjective, which is where testers have a real edge.</p>
+<h2>Where Testers Have an Unusual Advantage</h2>
+<p>Most tasks in software are fairly objective. Code either works or it doesn&#x27;t. A test either passes or fails. But a significant part of testing involves judgment calls that aren&#x27;t binary.</p>
+<p>Is this UI intuitive enough? Is this error message clear? Is this documentation written at the right level of detail for our users? These are questions where reasonable people can disagree, and where the &quot;right&quot; answer depends on your team&#x27;s standards, your product&#x27;s audience, and your company&#x27;s norms.</p>
+<p>RLHF is particularly well-suited for training an AI on exactly these kinds of subjective preferences. A few examples:</p>
+<h3>Output format preferences</h3>
+<p>Say your team prefers bug reports in a specific format: severity first, then steps to reproduce, then expected vs. actual behavior. If an AI generates a bug report in a different structure, that&#x27;s a thumbs down with a note. Over time, the format adapts.</p>
+<h3>Documentation style</h3>
+<p>Some teams write technical documentation for developers. Others write it for business stakeholders. These require completely different tones and levels of detail. Use feedback to calibrate which one the AI should default to.</p>
+<h3>Level of explanation</h3>
+<p>Say you ask for a correction to a piece of text. Some responses just show you the corrected version. Others explain what was changed and why. If you find the explanation valuable (especially for onboarding new team members), upvote that pattern. The model will surface explanations more often.</p>
+<blockquote>💡 Subjective quality is where AI tools are most inconsistent, and most improvable through feedback. The areas where your team has strong opinions about quality are exactly the areas where systematic feedback pays off most.</blockquote>
+<h2>The Objective vs. Subjective Distinction</h2>
+<p>It&#x27;s worth being clear about what feedback can and can&#x27;t do. Objective facts like whether a test case is technically valid, whether a calculation is correct, or whether code compiles aren&#x27;t improved by feedback in the same way. If an AI gets a fact wrong, the fix is better prompting and more context, as covered in article #5.</p>
+<p>Where feedback shines is anywhere the output is evaluated against preferences, standards, or judgment. Things where humans are the ultimate arbiters of quality. That&#x27;s a large fraction of what testers do.</p>
+<h2>A Small Practice That Compounds</h2>
+<p>You don&#x27;t need to give elaborate feedback on every interaction. The habit that actually makes a difference is being consistent: when you get an output you really like, click thumbs up. When something is clearly off, wrong format, wrong tone, missing something important, click thumbs down and add a one-line note.</p>
+<p>Done consistently over weeks, this calibrates your AI tools to your preferences in ways that save time every day. Think of it less as voting and more as training an assistant.</p>
+<h2>Your Exercise</h2>
+<p>Start the feedback habit this week. It takes one second per interaction and compounds over time. Here&#x27;s where to begin:</p>
+<li>The next time you use ChatGPT or Claude and get a response that&#x27;s formatted exactly how you like it, click thumbs up. Get in the habit. It takes one second.</li>
+<li>If you get a response that&#x27;s too verbose, too vague, or in the wrong format, click thumbs down and specify which of those it was. Note whether subsequent responses in that session improve.</li>
+<li>Identify one subjective quality standard your team cares about: documentation clarity, bug report format, or test case structure. Use that as a filter for feedback over the next two weeks and see if you notice a difference in output quality.</li>
+
+<div class="nav" style="margin-top:3em; padding-top:1em; border-top:1px solid #e5e5e5;"><a href="index.html">← Zurück zur Übersicht</a></div>
+</body>
+</html>
