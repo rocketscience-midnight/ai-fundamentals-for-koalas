@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>05 ai hallucinations</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 720px; margin: 0 auto; padding: 40px 20px; color: #1a1a1a; line-height: 1.7; }
+  h1 { font-size: 1.8em; margin: 1em 0 0.5em; }
+  h2 { font-size: 1.4em; margin: 1.5em 0 0.5em; color: #333; }
+  h3 { font-size: 1.2em; margin: 1.2em 0 0.4em; color: #444; }
+  p { margin: 0.8em 0; }
+  blockquote { border-left: 3px solid #2563eb; padding: 0.5em 1em; margin: 1em 0; background: #f8f9fa; color: #555; }
+  pre { background: #1e1e1e; color: #d4d4d4; padding: 1em; border-radius: 6px; overflow-x: auto; margin: 1em 0; }
+  code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.9em; }
+  li { margin: 0.4em 0; margin-left: 1.5em; }
+  hr { border: none; border-top: 1px solid #e5e5e5; margin: 2em 0; }
+  img { max-width: 100%; border-radius: 6px; margin: 1em 0; }
+  figure { margin: 1.5em 0; }
+  figcaption { color: #888; font-size: 0.85em; margin-top: 0.3em; }
+  .nav { margin-bottom: 2em; }
+  .nav a { color: #2563eb; text-decoration: none; }
+  .nav a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="nav"><a href="index.html">← Zurück zur Übersicht</a></div>
+<p>&quot;AI just makes things up.&quot; Fair point. It does, sometimes. But understanding why helps you work with it more effectively and reduce the problem significantly. Hallucinations aren&#x27;t random; they follow patterns, and there are concrete techniques to minimize them.</p>
+<h2>What&#x27;s Actually Happening</h2>
+<p>LLMs don&#x27;t retrieve facts from a database. They generate text by predicting what word should come next, based on patterns in their training data. Most of the time this produces accurate, useful output. But when the model doesn&#x27;t have enough reliable training data for a specific question, it fills the gap with something plausible-sounding, whether or not it&#x27;s true.</p>
+<p>This is why hallucinations often feel so convincing. The AI isn&#x27;t lying in any intentional sense. It&#x27;s completing a pattern, and the pattern it completes happens to be wrong. The confidence in the output doesn&#x27;t correlate with its accuracy, which is what makes it genuinely dangerous if you use AI output without checking it.</p>
+<p>There are a few things that make hallucinations more likely:</p>
+<li>Vague or underspecified prompts: the less context you give, the more the AI has to fill in</li>
+<li>Questions about recent events or very specific domain knowledge it wasn&#x27;t trained on</li>
+<li>Edge cases and scenarios that weren&#x27;t well-represented in training data</li>
+<li>Prompts that implicitly reward confident-sounding output over accurate output</li>
+<h2>Chain of Verification: The Practical Fix</h2>
+<p>The most effective technique for reducing hallucinations in testing contexts is called Chain of Verification (CoVe). Instead of asking the AI to just produce output, you ask it to produce output and then check it against specific criteria.</p>
+<p>Here&#x27;s the difference in practice:</p>
+<h3>Without verification</h3>
+<pre><code class="plain text">
+Generate test cases for the login functionality.
+</code></pre>
+<p>This might give you something that looks complete but contains tests for features that don&#x27;t exist, like social login buttons that aren&#x27;t in the product, or password requirements the system doesn&#x27;t actually enforce.</p>
+<h3>With Chain of Verification</h3>
+<pre><code class="plain text">
+Act as a software tester. Design test cases for the login functionality using chain of verification:
+1. For each test case, state what you&#x27;re testing and why it matters
+2. Verify whether each test is realistic and actually needed
+3. Verify whether each test is valid for this specific context: [describe your actual system]
+Flag any assumptions you&#x27;re making.
+</code></pre>
+<p>The AI now has to justify each test case, which forces it to reason more carefully and surfaces cases where it&#x27;s guessing. You&#x27;ll still need to review the output, but there&#x27;s much less noise to filter through.</p>
+<h2>The AI Maturity Staircase</h2>
+<p>Think of AI usage as a staircase with four levels. At the ground floor, basic chat, you type questions and hope for something useful. It works sometimes, but output quality is inconsistent because the AI has almost nothing to work with beyond your words. One level up is prompt engineering: writing more deliberate, structured requests that give the model clear direction. Better questions, better answers.</p>
+<p>The level above that is context engineering, which is what this article is primarily about. You are not just asking better questions - you are deliberately selecting and providing the right information, constraints, and examples so the AI has everything it needs to respond accurately. Each step up produces noticeably better results, and most people find the biggest gains happen here. Above that is agentic engineering: AI using tools and taking real actions in the world, rather than just responding. Article #8 covers that shift in depth.</p>
+<p>Knowing where you are on the staircase helps you understand why some interactions go well and others do not. If you are getting hallucinations or vague output, the answer is almost always a step up in how you provide context, not a different tool.</p>
+<h2>Context Is Your Primary Defense</h2>
+<p>The relationship between context and hallucinations is almost inversely proportional: the more relevant context you provide, the fewer hallucinations you&#x27;ll see. This makes intuitive sense. The AI has less to fill in when you give it more to work with.</p>
+<p>One helpful concept to understand here is the context window. Every AI conversation has a working memory of fixed size, measured in tokens (roughly word-parts). Everything you have typed, everything the AI has responded, and anything you paste in all consume space in that window. Older parts of long conversations can fall out of it. When you work on complex prompts, being aware of this explains why a fresh, focused conversation often outperforms a long rambling one.</p>
+<p>In testing terms, this means:</p>
+<li>Describe the specific system you&#x27;re testing, not a generic version of it</li>
+<li>Include the actual requirements or acceptance criteria when asking for test cases</li>
+<li>Upload relevant documents rather than summarizing them in your prompt</li>
+<li>Tell the AI what technology stack, environment, or constraints apply</li>
+<p>If you&#x27;ve set up memory as described in article #2, some of this happens automatically. But for complex prompts, always include the specific context for that request.</p>
+<p>A few specific techniques help beyond just providing raw context. Few-shot prompting means including one or two example inputs and expected outputs in your prompt rather than describing what you want in the abstract. The AI then has a concrete pattern to follow. Chain of thought means asking the AI to reason step by step rather than jumping straight to an answer, which is particularly useful for complex test scenarios or requirements analysis where a wrong assumption early on cascades. And for factual or domain-specific questions, attaching the actual document is more reliable than describing what&#x27;s in it.</p>
+<p>One important rule: curate, do not dump. The temptation is to paste your entire 200-page specification into the prompt and let the AI figure it out. Resist this. Volume is not the same as relevance. Give the AI what it needs for this specific question. If you include too much, the model may weight irrelevant content and produce worse results than if you had been selective. Signal over noise is the goal.</p>
+<p>When in doubt, a simple structure works well: start with the role you want the AI to take, then state the task clearly, add any constraints, include examples of good output if you have them, and finally attach the reference material it needs. You do not have to follow this rigidly, but running through it as a mental checklist tends to catch the gaps that lead to hallucinations.</p>
+<h2>Teaching the AI to Say &#x27;I Don&#x27;t Know&#x27;</h2>
+<p>By default, AI tools are trained to be helpful, which means they&#x27;d rather give you a plausible-sounding answer than admit uncertainty. You can override this explicitly:</p>
+<pre><code class="plain text">
+If you don&#x27;t have enough information to answer accurately, say so. Do not guess or extrapolate. If the requirements are incomplete, respond with: &#x27;Requirements incomplete. Please clarify [specific thing] before I can generate accurate test cases.&#x27;
+</code></pre>
+<p>This sounds small, but it changes the output meaningfully. You&#x27;d rather get a clear signal that more information is needed than a confident-sounding response that turns out to be wrong.</p>
+<blockquote>💡 A useful mental model: think of hallucinations as a signal about prompt quality, not about AI unreliability. When you get a hallucinated response, the question to ask is: &quot;What did my prompt fail to specify?&quot; The fix is almost always more context or more structure.</blockquote>
+<h2>Temperature and When It Matters</h2>
+<p>Most AI interfaces let you adjust a setting called temperature, which controls how creative (or conservative) the model is. Lower temperature means the model sticks closer to high-probability responses: less creativity, but also fewer hallucinations. Higher temperature produces more varied, creative output but with more risk of inaccuracy.</p>
+<p>For most testing work (generating test cases, analyzing requirements, writing bug reports), you want lower temperature. When you&#x27;re brainstorming and want a wide range of ideas, slightly higher is fine. In Google AI Studio (article #7), you can see and adjust this directly.</p>
+<p>For tasks that require precision, enabling tools is more reliable than adjusting temperature alone. Code execution (available in ChatGPT, Claude, and Google AI Studio) lets the model run calculations rather than estimate them. Web search gives it access to current information outside its training data. Both reduce the situations where the model has to guess, which is where hallucinations come from.</p>
+<h2>Your Exercise</h2>
+<p>Three practical assignments. Work through them in order. Each takes 10 to 15 minutes.</p>
+<li>Take a prompt you&#x27;ve used before that generated some questionable output. Rewrite it with CoVe: ask the AI to verify each point it makes against your actual context.</li>
+<li>Add an explicit &quot;I don&#x27;t know&quot; instruction to your next complex prompt. Notice whether the output changes. Does the AI flag more uncertainty?</li>
+<li>Next time you get test cases from AI, pick two or three and verify them manually. This isn&#x27;t because you distrust AI. It&#x27;s about calibrating your own sense of when the output is reliable and when it needs more scrutiny.</li>
+
+<div class="nav" style="margin-top:3em; padding-top:1em; border-top:1px solid #e5e5e5;"><a href="index.html">← Zurück zur Übersicht</a></div>
+</body>
+</html>
