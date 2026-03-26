@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>04 build ai that knows your job</title>
+<title>#4: Build an AI That Actually Knows Your Job</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 720px; margin: 0 auto; padding: 40px 20px; color: #1a1a1a; line-height: 1.7; }
@@ -25,58 +25,74 @@
 </style>
 </head>
 <body>
-<div class="nav"><a href="index.html">← Zurück zur Übersicht</a></div>
-<p>General-purpose AI is impressive, but it doesn&#x27;t know your team&#x27;s definition of &quot;done&quot;, your bug report template, or the quirks of the system you test. Custom AI assistants let you bake all of that in once and then hand the result to anyone on the team, no prompting expertise required.</p>
+<div class="nav"><a href="index.html">← Back to Overview</a></div>
+
+<h1>#4: Build an AI That Actually Knows Your Job</h1>
+
+<p>General-purpose AI is impressive, but it doesn't know your team's definition of "done", your bug report template, or the quirks of the system you test. Custom AI assistants let you bake all of that in once and then hand the result to anyone on the team, no prompting expertise required.</p>
+
 <h2>The Problem with Generic AI</h2>
-<p>Every AI tool you&#x27;ve used was built for everyone. That&#x27;s its strength, and its limitation. When you ask ChatGPT for test cases, it gives you something reasonable. But it doesn&#x27;t know that your team uses a specific format, that the feature you&#x27;re testing has three known quirks, or that a certain class of test case consistently gets rejected in your environment.</p>
+<p>Every AI tool you've used was built for everyone. That's its strength, and its limitation. When you ask ChatGPT or Claude for test cases, you get something reasonable. But it doesn't know that your team uses a specific format, that the feature you're testing has three known quirks, or that a certain class of test case consistently gets rejected in your environment.</p>
 <p>You end up compensating with long, detailed prompts every single time. Custom assistants move that work out of every conversation and into a one-time setup. Write the instructions once, and every subsequent interaction starts with that context already loaded.</p>
+
 <h2>What a Custom Assistant Actually Is</h2>
-<p>Think of it as a pre-configured AI persona. It has a name, a specific purpose, detailed instructions for how it should behave, and optionally a knowledge base of documents it can draw on. When someone opens it and starts typing, the AI already knows what it&#x27;s for.</p>
+<p>Think of it as a pre-configured AI persona. It has a name, a specific purpose, detailed instructions for how it should behave, and optionally a knowledge base of documents it can draw on. When someone opens it and starts typing, the AI already knows what it's for.</p>
 <p>The three ingredients that matter:</p>
 <h3>Instructions (the core)</h3>
-<p>This is a detailed prompt that defines the assistant&#x27;s behavior: its role, what it should do when given input, how it should format output, what it should and shouldn&#x27;t do. The quality of your instructions determines the quality of the assistant. Garbage in, garbage out. In this case, the garbage affects every future user of the assistant, not just one conversation.</p>
+<p>This is a detailed prompt that defines the assistant's behavior: its role, what it should do when given input, how it should format output, what it should and shouldn't do. The quality of your instructions determines the quality of the assistant. Garbage in, garbage out. In this case, the garbage affects every future user of the assistant, not just one conversation.</p>
 <h3>Knowledge base</h3>
-<p>You can upload documents (PDFs, Word files, spreadsheets) that the assistant draws on when answering. This is where you put your team&#x27;s guidelines, past test plans, acceptance criteria templates, or domain documentation. The AI can then reference these when generating outputs, which makes the results much more relevant to your specific context.</p>
+<p>You can upload documents (PDFs, Word files, spreadsheets) that the assistant draws on when answering. This is where you put your team's guidelines, past test plans, acceptance criteria templates, or domain documentation. The AI can then reference these when generating outputs, which makes the results much more relevant to your specific context.</p>
 <h3>Capabilities</h3>
-<p>Options like web search, code execution, and image analysis can be turned on or off. For most testing assistants, you&#x27;ll want web search off (to keep it focused on what you&#x27;ve given it) and image analysis on if you&#x27;re uploading screenshots.</p>
+<p>Options like web search, code execution, and image analysis can be turned on or off. For most testing assistants, you'll want web search off (to keep it focused on what you've given it) and image analysis on if you're uploading screenshots.</p>
+
 <h2>Useful Assistants Worth Building</h2>
 <p>Here are the ones that make the most sense for a testing team:</p>
 <li>Requirements Analyzer: paste in a requirement, get back clarification questions, identified risks, test ideas, and gaps. Especially useful during refinement.</li>
-<li>Bug Report Writer: describe what happened, get back a formatted bug report in your team&#x27;s template. Consistent quality, no one forgetting the steps-to-reproduce.</li>
+<li>Bug Report Writer: describe what happened, get back a formatted bug report in your team's template. Consistent quality, no one forgetting the steps-to-reproduce.</li>
 <li>Test Data Generator: specify what you need (e.g. 20 user registrations with edge-case email formats), get structured test data back.</li>
 <li>Root Cause Helper: describe a pattern of failures, get hypotheses about what might be causing them.</li>
+
 <h2>How to Build One</h2>
 <p>All of our main tools support custom assistants in some form:</p>
-<li>ChatGPT: &quot;Create a GPT&quot; in the sidebar</li>
-<li>Claude: &quot;Projects&quot; in the sidebar. You can set custom instructions, upload knowledge files, and keep everything scoped to a specific use case.</li>
-<li>Gemini: &quot;Gems&quot; at gemini.google.com</li>
+<li>ChatGPT: "Create a GPT" in the sidebar</li>
+<li>Claude: "Projects" in the sidebar. You can set custom instructions, upload knowledge files, and keep everything scoped to a specific use case.</li>
+<li>Gemini: "Gems" at gemini.google.com</li>
 <li>Google AI Studio: System Instructions + saved prompt configurations (more on this in article #7)</li>
-<li>AI Camp (bonus): supports multiple models in a single chat, useful for quick council-style comparisons when building and testing your assistant&#x27;s instructions</li>
-<p>The setup process is similar across all of them. You give it a name, write the instructions, optionally upload knowledge files, and test it. Here&#x27;s a sketch of what solid instructions look like for a Requirements Analyzer:</p>
-<pre><code class="plain text">
-Act as an expert software tester who regularly reviews feature requirements for testability.
+<li>AI Camp (bonus): supports multiple models in a single chat, useful for quick council-style comparisons when building and testing your assistant's instructions</li>
+<p>The setup process is similar across all of them. You give it a name, write the instructions, optionally upload knowledge files, and test it. Here's a sketch of what solid instructions look like for a Requirements Analyzer:</p>
+<pre><code>Act as an expert software tester who regularly
+reviews feature requirements for testability.
 
-When given a requirement, provide the following in this order:
-1. Clarification questions: things you&#x27;d need answered before you could test this properly
-2. Key notes: important implications a tester should be aware of
-3. Risks: what could go wrong, what&#x27;s likely to break
+When given a requirement, provide the following
+in this order:
+1. Clarification questions: things you'd need
+   answered before you could test this properly
+2. Key notes: important implications a tester
+   should be aware of
+3. Risks: what could go wrong, what's likely to break
 4. Test ideas: concrete scenarios worth testing
-5. Requirement gaps: anything that&#x27;s missing, ambiguous, or contradictory
+5. Requirement gaps: anything that's missing,
+   ambiguous, or contradictory
 
-Be specific. Don&#x27;t pad the output with generic advice. If something in the requirement is unclear, say so directly.
+Be specific. Don't pad the output with generic advice.
+If something in the requirement is unclear, say so
+directly.
 
-Wait for the user to provide a requirement before responding.
+Wait for the user to provide a requirement
+before responding.
 </code></pre>
 <p>Notice the last line. Without it, the AI might try to be helpful by generating a generic example. That instruction keeps it focused.</p>
-<blockquote>💡 Custom assistants are a bridge between people who know how to prompt and people who don&#x27;t. Once you&#x27;ve built something that works well, sharing it with the team means everyone benefits. Not just the person who figured out the right prompt.</blockquote>
+<blockquote>💡 Custom assistants are a bridge between people who know how to prompt and people who don't. Once you've built something that works well, sharing it with the team means everyone benefits. Not just the person who figured out the right prompt.</blockquote>
+
 <h2>A Note on Privacy</h2>
-<p>The documents you upload to a custom assistant&#x27;s knowledge base are used to generate responses but aren&#x27;t shared with other users. Your instructions stay with your assistant configuration. That said: don&#x27;t upload anything you wouldn&#x27;t want stored on an external platform. Internal architecture docs, customer data, or proprietary test plans should stay internal. Use anonymized or generalized versions when building knowledge bases.</p>
+<p>The documents you upload to a custom assistant's knowledge base are used to generate responses but aren't shared with other users. Your instructions stay with your assistant configuration. That said: don't upload anything you wouldn't want stored on an external platform. Internal architecture docs, customer data, or proprietary test plans should stay internal. Use anonymized or generalized versions when building knowledge bases.</p>
+
 <h2>Your Exercise</h2>
-<p>Build something concrete this week. Here&#x27;s your assignment:</p>
-<li>Think of one repetitive task in your daily testing work, something you do at least weekly with a consistent pattern. That&#x27;s your candidate for a custom assistant.</li>
-<li>Browse the ChatGPT GPT Store and search for &quot;software testing&quot; or &quot;QA&quot;. Look at what others have built. You&#x27;ll get ideas, and you can learn from how they wrote their instructions.</li>
+<p>Build something concrete this week. Here's your assignment:</p>
+<li>Think of one repetitive task in your daily testing work, something you do at least weekly with a consistent pattern. That's your candidate for a custom assistant.</li>
+<li>Browse the ChatGPT GPT Store and search for "software testing" or "QA". Look at what others have built. You'll get ideas, and you can learn from how they wrote their instructions.</li>
 <li>Build a simple Requirements Analyzer using the instruction template above. Test it on a real requirement from your current sprint. Note what it gets right and what needs refinement.</li>
 
-<div class="nav" style="margin-top:3em; padding-top:1em; border-top:1px solid #e5e5e5;"><a href="index.html">← Zurück zur Übersicht</a></div>
+<div class="nav" style="margin-top:3em; padding-top:1em; border-top:1px solid #e5e5e5;"><a href="index.html">← Back to Overview</a></div>
 </body>
 </html>
