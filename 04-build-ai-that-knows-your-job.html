@@ -22,9 +22,60 @@
   .nav { margin-bottom: 2em; }
   .nav a { color: #2563eb; text-decoration: none; }
   .nav a:hover { text-decoration: underline; }
+
+  /* === Dark Mode === */
+  body.dark { background: #1a1a2e; color: #e0e0e8; }
+  body.dark h2, body.dark h3 { color: #c0c0d0; }
+  body.dark a { color: #7c9ef5; }
+  body.dark blockquote { background: #252540; color: #b0b0c0; border-left-color: #4a6fa5; }
+  body.dark pre { background: #0d0d1a; }
+  body.dark .tool-section { background: #1e1e35; }
+  body.dark .badge-company { background: #1e3a5f; color: #93c5fd; }
+  body.dark .badge-free { background: #14532d; color: #86efac; }
+  body.dark .nav a { color: #7c9ef5; }
+  body.dark hr { border-top-color: #333; }
+  #dark-toggle {
+    position: fixed; top: 12px; right: 12px; z-index: 1000;
+    background: rgba(255,255,255,0.92); border: 1px solid #ddd;
+    border-radius: 50%; width: 38px; height: 38px; cursor: pointer;
+    font-size: 18px; line-height: 36px; text-align: center; padding: 0;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  }
+  body.dark #dark-toggle { background: rgba(26,26,46,0.92); border-color: #555; }
+
+  /* === Progress Bar === */
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 3px;
+    background: #2563eb; z-index: 999; width: 0%;
+    transition: width 0.1s ease;
+  }
+
+  /* === Copy Button === */
+  .pre-wrapper { position: relative; }
+  .copy-btn {
+    position: absolute; top: 8px; right: 8px;
+    background: #555; color: #fff; border: none;
+    border-radius: 4px; padding: 3px 8px; font-size: 0.75em;
+    cursor: pointer; opacity: 0.7; transition: opacity 0.2s;
+  }
+  .copy-btn:hover { opacity: 1; }
+
+  /* === Read Time === */
+  .read-time { color: #888; font-size: 0.9em; margin: 0.3em 0 0.8em; }
+  body.dark .read-time { color: #666; }
+
+  /* === Exercise Checkboxes === */
+  .exercise-list { list-style: none !important; padding-left: 0 !important; margin: 0.5em 0; }
+  .exercise-list > li { display: flex !important; align-items: flex-start; gap: 0.6em; margin: 0.6em 0 !important; margin-left: 0 !important; }
+  .exercise-list > li input[type="checkbox"] { margin-top: 3px; flex-shrink: 0; cursor: pointer; accent-color: #2563eb; width: 16px; height: 16px; }
+  .exercise-list > li label { cursor: pointer; line-height: 1.6; }
+  .exercise-list > li.done > label { text-decoration: line-through; color: #aaa; }
+  body.dark .exercise-list > li.done > label { color: #666; }
 </style>
 </head>
 <body>
+<button id="dark-toggle" onclick="toggleDark()" title="Toggle Dark Mode">🌙</button>
+<div id="progress-bar"></div>
 <div class="nav"><a href="index.html">← Back to Overview</a></div>
 
 <div style="float:right; margin:0 0 1em 1.5em;"><img src="https://media.tenor.com/vlSiUnIlrc8AAAAM/i-know-everything-jim-lake-jr.gif" alt="" style="max-width:300px; border-radius:8px;"></div>
@@ -96,5 +147,128 @@ before responding.
 <li>Build a simple Requirements Analyzer using the instruction template above. Test it on a real requirement from your current sprint. Note what it gets right and what needs refinement.</li>
 
 <div class="nav" style="margin-top:3em; padding-top:1em; border-top:1px solid #e5e5e5;"><a href="index.html">← Back to Overview</a></div>
+<script>
+// ---- Dark Mode ----
+function toggleDark() {
+  var isDark = document.body.classList.toggle('dark');
+  localStorage.setItem('darkMode', isDark ? '1' : '0');
+  var btn = document.getElementById('dark-toggle');
+  if (btn) btn.textContent = isDark ? '☀️' : '🌙';
+}
+(function() {
+  if (localStorage.getItem('darkMode') === '1') {
+    document.body.classList.add('dark');
+    var btn = document.getElementById('dark-toggle');
+    if (btn) btn.textContent = '☀️';
+  }
+})();
+
+// ---- Progress Bar ----
+window.addEventListener('scroll', function() {
+  var bar = document.getElementById('progress-bar');
+  if (!bar) return;
+  var scrollTop = window.scrollY || document.documentElement.scrollTop;
+  var docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  bar.style.width = (docHeight > 0 ? (scrollTop / docHeight * 100) : 0) + '%';
+});
+
+// ---- Copy Buttons for pre>code blocks ----
+document.querySelectorAll('pre').forEach(function(pre) {
+  var wrapper = document.createElement('div');
+  wrapper.className = 'pre-wrapper';
+  pre.parentNode.insertBefore(wrapper, pre);
+  wrapper.appendChild(pre);
+  var btn = document.createElement('button');
+  btn.className = 'copy-btn';
+  btn.textContent = '📋 Copy';
+  btn.addEventListener('click', function() {
+    var code = pre.querySelector('code');
+    var text = code ? code.innerText : pre.innerText;
+    navigator.clipboard.writeText(text).then(function() {
+      btn.textContent = '✅ Copied!';
+      setTimeout(function() { btn.textContent = '📋 Copy'; }, 2000);
+    }).catch(function() {
+      // fallback for older browsers
+      var ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy');
+      document.body.removeChild(ta);
+      btn.textContent = '✅ Copied!';
+      setTimeout(function() { btn.textContent = '📋 Copy'; }, 2000);
+    });
+  });
+  wrapper.appendChild(btn);
+});
+
+// ---- Read Time ----
+(function() {
+  var text = document.body.innerText || '';
+  var words = text.trim().split(/\s+/).length;
+  var mins = Math.ceil(words / 200);
+  var rt = document.createElement('p');
+  rt.className = 'read-time';
+  rt.textContent = '📖 ' + mins + ' min read';
+  var h1 = document.querySelector('h1');
+  if (h1) { h1.parentNode.insertBefore(rt, h1.nextSibling); }
+})();
+
+// ---- Exercise Checkboxes ----
+(function() {
+  var pageKey = (location.pathname.split('/').pop() || 'index').replace('.html', '');
+  var exerciseH2 = null;
+  document.querySelectorAll('h2').forEach(function(h) {
+    if (h.textContent.trim() === 'Your Exercise') exerciseH2 = h;
+  });
+  if (!exerciseH2) return;
+
+  // Collect UL elements and bare LI elements that are siblings after the exercise H2
+  var uls = [], bareLis = [];
+  var node = exerciseH2.nextSibling;
+  while (node) {
+    if (node.nodeType === 1) {
+      var tag = node.tagName.toLowerCase();
+      if (tag === 'ul') uls.push(node);
+      else if (tag === 'li') bareLis.push(node);
+    }
+    node = node.nextSibling;
+  }
+
+  function makeCheckbox(li, key) {
+    var saved = localStorage.getItem(key) === '1';
+    var label = document.createElement('label');
+    label.innerHTML = li.innerHTML;
+    var cb = document.createElement('input');
+    cb.type = 'checkbox'; cb.checked = saved;
+    if (saved) li.classList.add('done');
+    li.innerHTML = '';
+    li.appendChild(cb);
+    li.appendChild(label);
+    cb.addEventListener('change', function() {
+      localStorage.setItem(key, cb.checked ? '1' : '0');
+      li.classList.toggle('done', cb.checked);
+    });
+  }
+
+  // Process UL lists (article 01 style)
+  uls.forEach(function(ul, ulIdx) {
+    ul.classList.add('exercise-list');
+    ul.querySelectorAll(':scope > li').forEach(function(li, liIdx) {
+      makeCheckbox(li, pageKey + '-ul' + ulIdx + '-' + liIdx);
+    });
+  });
+
+  // Process bare LI elements (articles 02-07 style): wrap in a UL first
+  if (bareLis.length > 0) {
+    var ul = document.createElement('ul');
+    ul.className = 'exercise-list';
+    bareLis[0].parentNode.insertBefore(ul, bareLis[0]);
+    bareLis.forEach(function(li, liIdx) {
+      li.parentNode.removeChild(li);
+      ul.appendChild(li);
+      makeCheckbox(li, pageKey + '-bare-' + liIdx);
+    });
+  }
+})();
+</script>
 </body>
 </html>
