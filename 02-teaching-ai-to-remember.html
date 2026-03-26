@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>02 teaching ai to remember</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 720px; margin: 0 auto; padding: 40px 20px; color: #1a1a1a; line-height: 1.7; }
+  h1 { font-size: 1.8em; margin: 1em 0 0.5em; }
+  h2 { font-size: 1.4em; margin: 1.5em 0 0.5em; color: #333; }
+  h3 { font-size: 1.2em; margin: 1.2em 0 0.4em; color: #444; }
+  p { margin: 0.8em 0; }
+  blockquote { border-left: 3px solid #2563eb; padding: 0.5em 1em; margin: 1em 0; background: #f8f9fa; color: #555; }
+  pre { background: #1e1e1e; color: #d4d4d4; padding: 1em; border-radius: 6px; overflow-x: auto; margin: 1em 0; }
+  code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.9em; }
+  li { margin: 0.4em 0; margin-left: 1.5em; }
+  hr { border: none; border-top: 1px solid #e5e5e5; margin: 2em 0; }
+  img { max-width: 100%; border-radius: 6px; margin: 1em 0; }
+  figure { margin: 1.5em 0; }
+  figcaption { color: #888; font-size: 0.85em; margin-top: 0.3em; }
+  .nav { margin-bottom: 2em; }
+  .nav a { color: #2563eb; text-decoration: none; }
+  .nav a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="nav"><a href="index.html">← Zurück zur Übersicht</a></div>
+<p>Every time you start a new chat with an AI, it has no idea who you are, what you test, or how you like your output formatted. You end up re-explaining the same context over and over. Memory features exist to fix exactly this, and once you set them up properly, they genuinely save time.</p>
+<h2>What AI Memory Actually Means</h2>
+<p>LLMs don&#x27;t have a persistent brain between sessions by default. Each conversation starts blank. Memory features are the mechanism that lets information carry over, either automatically (implicit) or because you explicitly told the AI to remember something.</p>
+<p>The distinction matters. Implicit memory tries to infer patterns from your past conversations. It can be useful, but it can also pick up things you didn&#x27;t intend, and occasionally lead to the AI making assumptions based on outdated context. Explicit memory, where you deliberately tell the AI what to remember, is more reliable. More on that in a moment.</p>
+<p>Long-term memory (memory that persists across sessions, not just within one conversation) is generally a paid feature. With Claude Pro and ChatGPT Pro, you have access to it.</p>
+<h2>The Right Way: Set It Explicitly</h2>
+<p>The fastest way to get value from memory is to tell the AI exactly what you want it to remember. In ChatGPT, you can do this right in the chat:</p>
+<pre><code class="plain text">
+Remember this about me: I work as a software tester. My tech stack is C#, Selenium 4, and .NET 8. I prefer bullet-pointed outputs for test cases, and I want output formatted so it can be pasted directly into our test management tool.
+</code></pre>
+<p>After this, open a new chat. You shouldn&#x27;t need to re-explain any of that. The AI will use that context automatically.</p>
+<p>In Gemini, there&#x27;s a dedicated &quot;Saved Info&quot; section where you can view and edit what the AI has stored. It&#x27;s the closest thing to a transparency window into what the AI thinks it knows about you. For example: set &quot;I am working on testing the Ministry of Testing website&quot;, then refine it to &quot;I am testing the login feature&quot;. Open a new chat and ask for test scenarios with personas, and Gemini will use that stored context without you repeating it.</p>
+<h2>What to Actually Store</h2>
+<p>Think of memory in three buckets:</p>
+<h3>Facts about your context</h3>
+<p>These are the basics the AI needs to give you relevant answers without you repeating yourself:</p>
+<li>Your role and domain (&quot;I&#x27;m a QA lead, primarily testing a B2B SaaS product&quot;)</li>
+<li>Your tech stack (&quot;We use Playwright with TypeScript, deployed on AWS&quot;)</li>
+<li>Your team&#x27;s terminology (&quot;We call the end-to-end tests &#x27;journey tests&#x27;, not &#x27;E2E tests&#x27;&quot;)</li>
+<li>Any acronyms or internal names the AI might not know</li>
+<h3>Your preferences for output</h3>
+<p>This is where memory really pays off. Once the AI knows how you like things, you stop fighting the formatting:</p>
+<li>Output format: tables, bullets, or numbered steps - whatever works best for you</li>
+<li>Detail level: do you want the full picture or a concise summary?</li>
+<li>Documentation style: technical or business-readable?</li>
+<h3>Current projects</h3>
+<p>If you&#x27;re deep in a specific feature or release cycle, storing that context means you can jump straight to questions without the preamble. &quot;I&#x27;m currently testing the new user onboarding flow for v4.2&quot; is worth storing when it&#x27;s relevant.</p>
+<blockquote>💡 Memory isn&#x27;t forever. Projects end, stacks change, and old context can become noise. Build in a habit of reviewing your stored memory every few months and cleaning out anything stale.</blockquote>
+<p>Memory is also distinct from RAG (Retrieval-Augmented Generation), which is what custom assistants use when you upload knowledge files (covered in article #4). Think of memory like RAM: fast, limited in size, and used for context you need in every session. RAG is more like a hard drive: larger capacity, better suited for documents and reference material you look up on demand. Both have their place, and they work well together.</p>
+<h2>Implicit Memory: Use With Caution</h2>
+<p>Both ChatGPT and Claude can pick up patterns from your conversation history without you explicitly asking them to remember anything. This can be convenient, but it can also quietly accumulate incorrect assumptions. If an AI ever seems to be drawing on context you didn&#x27;t intend, check the memory settings and clean up what&#x27;s there.</p>
+<p>The general principle: explicit is better than implicit. A few minutes setting up clear memory beats hoping the AI inferred the right things.</p>
+<h2>Your Exercise</h2>
+<p>This takes about 15 minutes. Do it now, and every AI session you run from this point on will start with a head start.</p>
+<li>Open ChatGPT or Claude and set your context explicitly: role, tech stack, and output preferences. Keep it to 3-5 sentences.</li>
+<li>Start a new conversation and ask something testing-related without providing any background. See what it already knows.</li>
+<li>If you use ChatGPT, go to Settings → Personalization → Memory and review what&#x27;s stored. In Claude, check Settings → Activity to see what it remembers. Edit or remove anything that&#x27;s outdated or wrong.</li>
+
+<div class="nav" style="margin-top:3em; padding-top:1em; border-top:1px solid #e5e5e5;"><a href="index.html">← Zurück zur Übersicht</a></div>
+</body>
+</html>
