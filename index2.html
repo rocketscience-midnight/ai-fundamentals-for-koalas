@@ -1,0 +1,2695 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompting Fundamentals — Koala Workshop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   CSS CUSTOM PROPERTIES
+   ============================================================ */
+:root {
+  --bg: #ffffff;
+  --bg-secondary: #f8fafc;
+  --surface: #f1f5f9;
+  --surface-hover: #e2e8f0;
+  --border: #e2e8f0;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-subtle: #94a3b8;
+  --accent: #3b82f6;
+  --accent-dark: #2563eb;
+  --accent-light: #eff6ff;
+  --amber: #f59e0b;
+  --amber-light: #fffbeb;
+  --green: #10b981;
+  --green-light: #ecfdf5;
+  --purple: #8b5cf6;
+  --purple-light: #f5f3ff;
+  --red: #ef4444;
+  --red-light: #fef2f2;
+  --code-bg: #1e293b;
+  --code-text: #e2e8f0;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.06);
+  --shadow-xl: 0 20px 60px rgba(0,0,0,0.12);
+  --radius: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --nav-height: 64px;
+}
+
+[data-theme="dark"] {
+  --bg: #0f172a;
+  --bg-secondary: #0a1020;
+  --surface: #1e293b;
+  --surface-hover: #293548;
+  --border: #334155;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-subtle: #64748b;
+  --accent: #60a5fa;
+  --accent-dark: #3b82f6;
+  --accent-light: #1e3a5f;
+  --amber: #fbbf24;
+  --amber-light: #1c1505;
+  --green: #34d399;
+  --green-light: #022c22;
+  --purple: #a78bfa;
+  --purple-light: #1e1533;
+  --red: #f87171;
+  --red-light: #200;
+  --code-bg: #0d1117;
+  --code-text: #e2e8f0;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow: 0 4px 6px rgba(0,0,0,0.3);
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.4);
+  --shadow-xl: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  transition: background 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
+}
+
+img { max-width: 100%; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ============================================================
+   DARK MODE TOGGLE
+   ============================================================ */
+.theme-toggle {
+  position: fixed;
+  top: 14px;
+  right: 20px;
+  z-index: 1000;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 50px;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+.theme-toggle:hover { transform: scale(1.05); box-shadow: var(--shadow-lg); }
+
+.toggle-track {
+  width: 40px;
+  height: 22px;
+  background: var(--border);
+  border-radius: 11px;
+  position: relative;
+  transition: background 0.3s ease;
+}
+[data-theme="dark"] .toggle-track { background: var(--accent); }
+
+.toggle-thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+[data-theme="dark"] .toggle-thumb { transform: translateX(18px); }
+
+.toggle-icon {
+  font-size: 14px;
+  line-height: 1;
+  user-select: none;
+}
+
+/* ============================================================
+   STICKY NAV
+   ============================================================ */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-height);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: rgba(255,255,255,0.85);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+[data-theme="dark"] .nav {
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.nav-brand {
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.nav-brand .logo-icon { font-size: 1.1rem; }
+
+.nav-lessons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--text-subtle);
+  cursor: pointer;
+  transition: var(--transition);
+  text-decoration: none;
+  background: var(--bg);
+  flex-shrink: 0;
+}
+.nav-dot:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: scale(1.15);
+  text-decoration: none;
+}
+.nav-dot.completed {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.nav-dot.bonus {
+  border-style: dashed;
+}
+.nav-dot.bonus.completed {
+  background: var(--amber);
+  border-color: var(--amber);
+  color: #0f172a;
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  padding: calc(var(--nav-height) + 40px) 24px 80px;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 30%, #1a2980 50%, #26d0ce 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 12s ease infinite;
+  z-index: 0;
+}
+.hero-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 50%, rgba(59,130,246,0.3) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 30%, rgba(245,158,11,0.2) 0%, transparent 50%);
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Floating orbs */
+.hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  animation: float 8s ease-in-out infinite;
+  pointer-events: none;
+}
+.hero-orb-1 {
+  width: 500px; height: 500px;
+  background: #3b82f6;
+  top: -100px; left: -100px;
+  animation-delay: 0s;
+}
+.hero-orb-2 {
+  width: 400px; height: 400px;
+  background: #f59e0b;
+  bottom: -50px; right: -50px;
+  animation-delay: -4s;
+}
+.hero-orb-3 {
+  width: 300px; height: 300px;
+  background: #8b5cf6;
+  top: 40%; right: 20%;
+  animation-delay: -2s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) scale(1); }
+  50% { transform: translateY(-30px) scale(1.05); }
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50px;
+  padding: 8px 18px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+  margin-bottom: 32px;
+  backdrop-filter: blur(10px);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  animation: fadeInUp 0.6s ease both;
+}
+.hero-badge .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #34d399;
+  animation: pulse 2s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.4); }
+}
+
+.hero-title {
+  font-size: clamp(3rem, 8vw, 6.5rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+  color: white;
+  margin-bottom: 24px;
+  animation: fadeInUp 0.6s ease 0.1s both;
+}
+.hero-title .accent-word {
+  background: linear-gradient(135deg, #60a5fa 0%, #f59e0b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: clamp(1rem, 2.5vw, 1.35rem);
+  color: rgba(255,255,255,0.7);
+  font-weight: 400;
+  letter-spacing: 0;
+  margin-bottom: 48px;
+  animation: fadeInUp 0.6s ease 0.2s both;
+}
+
+.hero-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 48px;
+  animation: fadeInUp 0.6s ease 0.3s both;
+}
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.stat-num {
+  font-size: 2rem;
+  font-weight: 800;
+  color: white;
+  line-height: 1;
+}
+.stat-label {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+}
+.stat-divider {
+  width: 1px;
+  height: 40px;
+  background: rgba(255,255,255,0.2);
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  color: #0f172a;
+  padding: 16px 32px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  transition: var(--transition);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  text-decoration: none;
+  animation: fadeInUp 0.6s ease 0.4s both;
+}
+.hero-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  text-decoration: none;
+  color: #0f172a;
+}
+.hero-cta .arrow { transition: transform 0.2s ease; }
+.hero-cta:hover .arrow { transform: translateX(4px); }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.hero-scroll {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255,255,255,0.4);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  animation: fadeInUp 0.6s ease 0.8s both;
+  z-index: 1;
+}
+.scroll-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
+  animation: scrollLine 2s ease-in-out infinite;
+}
+@keyframes scrollLine {
+  0%, 100% { transform: scaleY(1); opacity: 1; }
+  50% { transform: scaleY(0.5); opacity: 0.3; }
+}
+
+/* ============================================================
+   WHAT YOU'LL LEARN
+   ============================================================ */
+.section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 80px 24px;
+}
+
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+
+.section-sub {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  max-width: 600px;
+}
+
+.learn-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  margin-top: 48px;
+}
+
+.learn-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.learn-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--card-color, var(--accent));
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.learn-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.learn-card:hover::before { opacity: 1; }
+
+.learn-icon {
+  font-size: 1.8rem;
+  margin-bottom: 14px;
+  display: block;
+  line-height: 1;
+}
+.learn-card h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+.learn-card p {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ============================================================
+   PROGRESS TRACKER
+   ============================================================ */
+.progress-section {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 40px 24px;
+}
+
+.progress-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.progress-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.progress-count {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.progress-bar-wrap {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--amber));
+  border-radius: 3px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 0%;
+}
+
+.progress-dots {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.progress-dot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.2s ease;
+  text-decoration: none;
+}
+.progress-dot:hover { color: var(--text); text-decoration: none; }
+.progress-dot .dot-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  transition: var(--transition);
+  background: var(--bg);
+  flex-shrink: 0;
+}
+.progress-dot.done .dot-circle {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+.progress-dot.bonus-dot .dot-circle {
+  border-style: dashed;
+}
+.progress-dot.bonus-dot.done .dot-circle {
+  background: var(--amber);
+  border-color: var(--amber);
+  color: #0f172a;
+}
+.progress-dot-label {
+  display: none;
+}
+
+/* ============================================================
+   LESSONS
+   ============================================================ */
+.lessons-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 80px 24px;
+}
+
+.lessons-header {
+  margin-bottom: 48px;
+}
+
+.lesson-card {
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  position: relative;
+}
+.lesson-card:hover { box-shadow: var(--shadow-lg); }
+.lesson-card.open { border-color: var(--lesson-color, var(--accent)); }
+
+.lesson-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 28px 32px;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s ease;
+}
+.lesson-header:hover { background: var(--surface); }
+
+.lesson-num {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: var(--lesson-bg, var(--accent-light));
+  color: var(--lesson-color, var(--accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 800;
+  flex-shrink: 0;
+  transition: var(--transition);
+}
+.lesson-card.open .lesson-num {
+  background: var(--lesson-color, var(--accent));
+  color: white;
+}
+
+.lesson-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.lesson-num-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lesson-color, var(--accent));
+  margin-bottom: 4px;
+}
+
+.lesson-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.lesson-teaser {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.lesson-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.lesson-time {
+  font-size: 0.75rem;
+  color: var(--text-subtle);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.lesson-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1.5px solid var(--lesson-color, var(--accent));
+  color: var(--lesson-color, var(--accent));
+  background: transparent;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.lesson-btn:hover {
+  background: var(--lesson-color, var(--accent));
+  color: white;
+}
+.lesson-card.open .lesson-btn {
+  background: var(--lesson-color, var(--accent));
+  color: white;
+}
+.lesson-btn-arrow {
+  transition: transform 0.3s ease;
+  font-size: 0.7rem;
+}
+.lesson-card.open .lesson-btn-arrow { transform: rotate(180deg); }
+
+.lesson-bonus-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--amber-light);
+  color: var(--amber);
+  border: 1px solid var(--amber);
+  border-radius: 50px;
+  padding: 3px 10px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ============================================================
+   LESSON CONTENT (EXPANDABLE)
+   ============================================================ */
+.lesson-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.lesson-card.open .lesson-body { max-height: 9999px; }
+
+.lesson-content {
+  padding: 0 32px 40px;
+  border-top: 1px solid var(--border);
+}
+
+/* Content divider */
+.content-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 32px 0;
+}
+
+/* Section headings inside content */
+.lesson-content h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin: 32px 0 12px;
+  padding-top: 8px;
+}
+.lesson-content h2:first-child { margin-top: 32px; }
+.lesson-content h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 20px 0 8px;
+}
+.lesson-content p {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+  margin-bottom: 16px;
+}
+.lesson-content ul, .lesson-content ol {
+  padding-left: 20px;
+  margin-bottom: 16px;
+}
+.lesson-content li {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  line-height: 1.65;
+}
+.lesson-content strong { color: var(--text); font-weight: 600; }
+
+/* ============================================================
+   CODE BLOCKS
+   ============================================================ */
+.code-block {
+  position: relative;
+  margin: 24px 0;
+}
+
+.code-block pre {
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 20px 24px;
+  border-radius: var(--radius);
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  border: 1px solid rgba(255,255,255,0.06);
+  padding-top: 48px;
+}
+
+.code-label {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #64748b;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #94a3b8;
+  padding: 5px 12px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: 'Inter', sans-serif;
+  letter-spacing: 0.03em;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.copy-btn:hover {
+  background: rgba(255,255,255,0.15);
+  color: white;
+}
+.copy-btn.copied {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #34d399;
+}
+
+/* ============================================================
+   TAKEAWAY BOXES
+   ============================================================ */
+.takeaway {
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin: 24px 0;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.takeaway.blue {
+  background: var(--accent-light);
+  border: 1px solid rgba(59,130,246,0.2);
+}
+.takeaway.amber {
+  background: var(--amber-light);
+  border: 1px solid rgba(245,158,11,0.2);
+}
+.takeaway.green {
+  background: var(--green-light);
+  border: 1px solid rgba(16,185,129,0.2);
+}
+.takeaway.purple {
+  background: var(--purple-light);
+  border: 1px solid rgba(139,92,246,0.2);
+}
+.takeaway-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.takeaway-content { flex: 1; }
+.takeaway-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+.takeaway.blue .takeaway-label { color: var(--accent); }
+.takeaway.amber .takeaway-label { color: var(--amber); }
+.takeaway.green .takeaway-label { color: var(--green); }
+.takeaway.purple .takeaway-label { color: var(--purple); }
+.takeaway p {
+  font-size: 0.875rem !important;
+  margin-bottom: 0 !important;
+  line-height: 1.6 !important;
+}
+.takeaway.blue p { color: var(--accent-dark) !important; }
+[data-theme="dark"] .takeaway.blue p { color: var(--accent) !important; }
+.takeaway.amber p { color: #92400e !important; }
+[data-theme="dark"] .takeaway.amber p { color: var(--amber) !important; }
+.takeaway.green p { color: #065f46 !important; }
+[data-theme="dark"] .takeaway.green p { color: var(--green) !important; }
+.takeaway.purple p { color: #5b21b6 !important; }
+[data-theme="dark"] .takeaway.purple p { color: var(--purple) !important; }
+
+/* Key Points Grid */
+.key-points {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+  margin: 20px 0 28px;
+}
+.key-point {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.key-point-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--lesson-color, var(--accent));
+  flex-shrink: 0;
+  margin-top: 7px;
+}
+.key-point p {
+  font-size: 0.82rem !important;
+  margin: 0 !important;
+  color: var(--text) !important;
+  font-weight: 500;
+}
+
+/* Role cards */
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+  margin: 16px 0 24px;
+}
+.role-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  transition: var(--transition);
+}
+.role-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.role-card-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.role-card p {
+  font-size: 0.78rem !important;
+  margin: 0 !important;
+  color: var(--text-muted) !important;
+  line-height: 1.4 !important;
+}
+
+/* ============================================================
+   EXERCISES
+   ============================================================ */
+.exercise-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-top: 32px;
+}
+.exercise-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.exercise-icon { font-size: 1.1rem; }
+.exercise-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.exercise-sub {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+.exercise-list { list-style: none; padding: 0; margin: 0; }
+.exercise-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+.exercise-item:last-child { border-bottom: none; }
+.exercise-item.checked { opacity: 0.6; }
+
+.exercise-checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 2px solid var(--border);
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  background: var(--bg);
+}
+.exercise-item.checked .exercise-checkbox {
+  background: var(--green);
+  border-color: var(--green);
+}
+.exercise-checkbox-check {
+  color: white;
+  font-size: 0.7rem;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 0.2s ease;
+}
+.exercise-item.checked .exercise-checkbox-check {
+  opacity: 1;
+  transform: scale(1);
+}
+.exercise-text {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.55;
+  flex: 1;
+}
+.exercise-item.checked .exercise-text {
+  text-decoration: line-through;
+  color: var(--text-subtle);
+}
+
+/* ============================================================
+   COMPLETION SECTION
+   ============================================================ */
+.completion-section {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+  padding: 120px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  display: none;
+}
+.completion-section.visible { display: block; }
+
+.completion-section::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(59,130,246,0.2) 0%, transparent 70%);
+}
+
+.completion-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.completion-trophy {
+  font-size: 5rem;
+  margin-bottom: 24px;
+  display: block;
+  animation: trophyBounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+@keyframes trophyBounce {
+  from { opacity: 0; transform: scale(0.3) rotate(-10deg); }
+  to { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+.completion-title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: white;
+  margin-bottom: 16px;
+}
+
+.completion-sub {
+  font-size: 1.1rem;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 40px;
+  line-height: 1.6;
+}
+
+.completion-badges {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+.completion-badge {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50px;
+  padding: 8px 18px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.9);
+}
+
+/* ============================================================
+   CONFETTI
+   ============================================================ */
+.confetti-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  overflow: hidden;
+}
+.confetti-piece {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  opacity: 0;
+  animation: confettiFall linear forwards;
+}
+
+@keyframes confettiFall {
+  0% {
+    opacity: 1;
+    transform: translateY(-20px) rotate(0deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(100vh) rotate(720deg);
+  }
+}
+
+/* ============================================================
+   FOOTER / END NAV
+   ============================================================ */
+.site-footer {
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  padding: 40px 24px;
+  text-align: center;
+}
+.footer-inner { max-width: 600px; margin: 0 auto; }
+.footer-logo {
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.footer-meta {
+  font-size: 0.8rem;
+  color: var(--text-subtle);
+}
+.footer-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 24px;
+}
+.footer-links a {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+  text-decoration: none;
+}
+.footer-links a:hover { color: var(--accent); }
+
+/* ============================================================
+   SCROLL ANIMATIONS
+   ============================================================ */
+.fade-in {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================
+   STAIRCASE VISUAL
+   ============================================================ */
+.staircase {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  margin: 20px 0;
+}
+.stair-steps { list-style: none; padding: 0; }
+.stair-step {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  margin-bottom: 4px;
+  transition: background 0.2s ease;
+}
+.stair-step:hover { background: var(--surface-hover); }
+.stair-step-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.stair-step.level-1 .stair-step-num { background: #dbeafe; color: #1e40af; }
+.stair-step.level-2 .stair-step-num { background: #dcfce7; color: #166534; }
+.stair-step.level-3 .stair-step-num { background: #fef3c7; color: #92400e; }
+.stair-step.level-4 .stair-step-num { background: #f5f3ff; color: #6d28d9; }
+[data-theme="dark"] .stair-step.level-1 .stair-step-num { background: #1e3a5f; color: #60a5fa; }
+[data-theme="dark"] .stair-step.level-2 .stair-step-num { background: #022c22; color: #34d399; }
+[data-theme="dark"] .stair-step.level-3 .stair-step-num { background: #1c1505; color: #fbbf24; }
+[data-theme="dark"] .stair-step.level-4 .stair-step-num { background: #1e1533; color: #a78bfa; }
+.stair-step-content { flex: 1; }
+.stair-step-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+}
+.stair-step-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .hero-stats { gap: 20px; }
+  .stat-num { font-size: 1.5rem; }
+  .lesson-header { padding: 20px; gap: 14px; }
+  .lesson-num { width: 42px; height: 42px; font-size: 0.95rem; border-radius: 12px; }
+  .lesson-content { padding: 0 20px 32px; }
+  .lesson-actions { gap: 10px; }
+  .lesson-btn { padding: 8px 14px; font-size: 0.75rem; }
+  .lesson-time { display: none; }
+  .learn-grid { grid-template-columns: 1fr 1fr; }
+  .role-grid { grid-template-columns: 1fr 1fr; }
+  .key-points { grid-template-columns: 1fr; }
+  .nav-lessons { gap: 4px; }
+  .nav-dot { width: 24px; height: 24px; font-size: 0.6rem; }
+  .section { padding: 60px 20px; }
+  .lessons-container { padding: 60px 20px; }
+  .progress-section { padding: 32px 20px; }
+}
+
+@media (max-width: 480px) {
+  .nav { padding: 0 16px; }
+  .nav-brand span:not(.logo-icon) { display: none; }
+  .learn-grid { grid-template-columns: 1fr; }
+  .hero-stats { flex-wrap: wrap; gap: 16px; }
+  .stat-divider { display: none; }
+  .role-grid { grid-template-columns: 1fr; }
+  .lesson-teaser { display: none; }
+  .nav-lessons { display: none; }
+}
+
+/* ============================================================
+   SMOOTH SCROLL ANCHOR OFFSET
+   ============================================================ */
+.lesson-anchor { scroll-margin-top: calc(var(--nav-height) + 20px); }
+</style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!-- DARK MODE TOGGLE                                              -->
+<!-- ============================================================ -->
+<button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark mode">
+  <span class="toggle-icon">☀️</span>
+  <div class="toggle-track"><div class="toggle-thumb"></div></div>
+  <span class="toggle-icon">🌙</span>
+</button>
+
+<!-- ============================================================ -->
+<!-- STICKY NAV                                                    -->
+<!-- ============================================================ -->
+<nav class="nav" role="navigation">
+  <div class="nav-brand">
+    <span class="logo-icon">🐨</span>
+    <span>Koala Workshop</span>
+  </div>
+  <div class="nav-lessons" aria-label="Lesson navigation">
+    <a href="#lesson-1" class="nav-dot" id="nav-1" title="Lesson 1">1</a>
+    <a href="#lesson-2" class="nav-dot" id="nav-2" title="Lesson 2">2</a>
+    <a href="#lesson-3" class="nav-dot" id="nav-3" title="Lesson 3">3</a>
+    <a href="#lesson-4" class="nav-dot" id="nav-4" title="Lesson 4">4</a>
+    <a href="#lesson-5" class="nav-dot" id="nav-5" title="Lesson 5">5</a>
+    <a href="#lesson-6" class="nav-dot" id="nav-6" title="Lesson 6">6</a>
+    <a href="#lesson-7" class="nav-dot bonus" id="nav-7" title="Bonus: Google AI Studio">★7</a>
+    <a href="#lesson-8" class="nav-dot bonus" id="nav-8" title="Bonus: Agentic AI">★8</a>
+  </div>
+</nav>
+
+<!-- ============================================================ -->
+<!-- HERO                                                          -->
+<!-- ============================================================ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-orb hero-orb-3"></div>
+  
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Koala Workshop · QA Team Training
+    </div>
+    
+    <h1 class="hero-title">
+      Prompting<br><span class="accent-word">Fundamentals</span>
+    </h1>
+    
+    <p class="hero-sub">
+      8 lessons. ~20 minutes each. Zero fluff.<br>From basic chat to AI that actually knows your job.
+    </p>
+    
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-num">8</span>
+        <span class="stat-label">Lessons</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-num">~2h</span>
+        <span class="stat-label">Total Time</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <span class="stat-num">24+</span>
+        <span class="stat-label">Prompts to steal</span>
+      </div>
+    </div>
+    
+    <a href="#overview" class="hero-cta">
+      Start Learning <span class="arrow">→</span>
+    </a>
+  </div>
+  
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- WHAT YOU'LL LEARN                                            -->
+<!-- ============================================================ -->
+<section class="section fade-in" id="overview">
+  <div class="section-label">What's inside</div>
+  <h2 class="section-title">From prompt beginner<br>to AI power user</h2>
+  <p class="section-sub">Eight practical lessons that teach you how to work with AI tools the way professionals do — not just asking questions, but getting results.</p>
+  
+  <div class="learn-grid">
+    <div class="learn-card" style="--card-color: #3b82f6">
+      <span class="learn-icon">🧠</span>
+      <h3>Multi-LLM thinking</h3>
+      <p>Use Claude, ChatGPT, and Gemini together for perspectives you can't get from one alone.</p>
+    </div>
+    <div class="learn-card" style="--card-color: #10b981">
+      <span class="learn-icon">🧬</span>
+      <h3>Persistent memory</h3>
+      <p>Stop re-explaining yourself every chat. Set up memory once, save hours every week.</p>
+    </div>
+    <div class="learn-card" style="--card-color: #f59e0b">
+      <span class="learn-icon">👁️</span>
+      <h3>Multimodal inputs</h3>
+      <p>Screenshots, voice, screen sharing — AI can see. Most people don't use this. You will.</p>
+    </div>
+    <div class="learn-card" style="--card-color: #8b5cf6">
+      <span class="learn-icon">🤖</span>
+      <h3>Custom assistants</h3>
+      <p>Build an AI that knows your bug report template, your tech stack, and your team's standards.</p>
+    </div>
+    <div class="learn-card" style="--card-color: #ef4444">
+      <span class="learn-icon">🔍</span>
+      <h3>Hallucination control</h3>
+      <p>Understand why AI makes things up and the techniques that prevent it almost entirely.</p>
+    </div>
+    <div class="learn-card" style="--card-color: #06b6d4">
+      <span class="learn-icon">📡</span>
+      <h3>Feedback loops</h3>
+      <p>Those thumbs buttons are training levers. Learn to use them to calibrate AI to your standards.</p>
+    </div>
+    <div class="learn-card" style="--card-color: #f59e0b">
+      <span class="learn-icon">⚡</span>
+      <h3>Google AI Studio</h3>
+      <p>The free power tool almost nobody on your team has explored yet. Compare models, build apps.</p>
+    </div>
+    <div class="learn-card" style="--card-color: #3b82f6">
+      <span class="learn-icon">🚀</span>
+      <h3>Agentic AI</h3>
+      <p>AI that doesn't just answer — it acts. Browses the web, runs code, takes real steps.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ -->
+<!-- PROGRESS TRACKER                                              -->
+<!-- ============================================================ -->
+<div class="progress-section fade-in">
+  <div class="progress-inner">
+    <div class="progress-header">
+      <span class="progress-title">Your Progress</span>
+      <span class="progress-count" id="progress-count">0 of 8 lessons opened</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-bar"></div>
+    </div>
+    <div class="progress-dots">
+      <a href="#lesson-1" class="progress-dot" id="pdot-1">
+        <div class="dot-circle">1</div>
+        <span class="progress-dot-label">Multi-LLM</span>
+      </a>
+      <a href="#lesson-2" class="progress-dot" id="pdot-2">
+        <div class="dot-circle">2</div>
+        <span class="progress-dot-label">Memory</span>
+      </a>
+      <a href="#lesson-3" class="progress-dot" id="pdot-3">
+        <div class="dot-circle">3</div>
+        <span class="progress-dot-label">Visuals</span>
+      </a>
+      <a href="#lesson-4" class="progress-dot" id="pdot-4">
+        <div class="dot-circle">4</div>
+        <span class="progress-dot-label">Custom AI</span>
+      </a>
+      <a href="#lesson-5" class="progress-dot" id="pdot-5">
+        <div class="dot-circle">5</div>
+        <span class="progress-dot-label">Hallucinations</span>
+      </a>
+      <a href="#lesson-6" class="progress-dot" id="pdot-6">
+        <div class="dot-circle">6</div>
+        <span class="progress-dot-label">Feedback</span>
+      </a>
+      <a href="#lesson-7" class="progress-dot bonus-dot" id="pdot-7">
+        <div class="dot-circle">★7</div>
+        <span class="progress-dot-label">AI Studio</span>
+      </a>
+      <a href="#lesson-8" class="progress-dot bonus-dot" id="pdot-8">
+        <div class="dot-circle">★8</div>
+        <span class="progress-dot-label">Agentic</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- LESSONS                                                       -->
+<!-- ============================================================ -->
+<div class="lessons-container">
+  <div class="lessons-header fade-in">
+    <div class="section-label">Core Curriculum</div>
+    <h2 class="section-title">The Lessons</h2>
+  </div>
+
+  <!-- ===== LESSON 1 ===== -->
+  <div class="lesson-card fade-in" id="lesson-1" style="--lesson-color: #3b82f6; --lesson-bg: #eff6ff;" data-lesson="1">
+    <div class="lesson-header" onclick="toggleLesson(1)">
+      <div class="lesson-num lesson-anchor">01</div>
+      <div class="lesson-meta">
+        <div class="lesson-num-label">Lesson 1</div>
+        <div class="lesson-title">Don't Ask One AI — Ask Three</div>
+        <div class="lesson-teaser">Run the same prompt through multiple models and watch them disagree. That's where the insight lives.</div>
+      </div>
+      <div class="lesson-actions">
+        <div class="lesson-time">⏱ 20 min</div>
+        <button class="lesson-btn">
+          Start Lesson <span class="lesson-btn-arrow">▾</span>
+        </button>
+      </div>
+    </div>
+    <div class="lesson-body">
+      <div class="lesson-content">
+
+        <h2>Why Different Models Think Differently</h2>
+        <p>Every LLM was trained on different data, with different objectives and fine-tuning. <strong>ChatGPT</strong> tends to be thorough and tool-oriented. <strong>Claude</strong> tends to be crisp and structured, good at reasoning. <strong>Gemini</strong> is well-connected to Google's knowledge graph, useful for research. These aren't marketing claims — you'll actually see different outputs when you run the same prompt through each.</p>
+        <p>The point isn't to pick a winner. It's to collect perspectives. One model might surface a risk you hadn't considered. Another might challenge an assumption the first one made. When you synthesize their outputs yourself, the result is often better than any single response.</p>
+
+        <div class="takeaway blue">
+          <span class="takeaway-icon">💡</span>
+          <div class="takeaway-content">
+            <div class="takeaway-label">Key Insight</div>
+            <p>You're the curator. The AI generates, you judge. That's the division of labor that works. Look for ideas that appear in all three (important), only in one (potentially most valuable), and contradictions (worth investigating).</p>
+          </div>
+        </div>
+
+        <h2>The Council of LLMs — Starter Prompt</h2>
+        <p>Write one clear, detailed prompt and run it through ChatGPT, Claude, and optionally Gemini. Don't tweak it between runs — you want comparability.</p>
+
+        <div class="code-block">
+          <span class="code-label">prompt template</span>
+          <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+          <pre><code>Act as an expert in [your domain].
+I need to [describe task].
+
+The constraints are:
+- [constraint 1]
+- [constraint 2]
+- [constraint 3]
+
+Also flag the things most people forget,
+and highlight the biggest risks.</code></pre>
+        </div>
+
+        <h2>Assign Roles for Better Results</h2>
+        <p>You can make the council even more useful by assigning different roles. The role changes behavior meaningfully — ask Claude to be a critic and it will find things it wouldn't surface if you just asked for ideas.</p>
+
+        <div class="role-grid">
+          <div class="role-card">
+            <div class="role-card-title">🎨 Generator</div>
+            <p>Brainstorm without filtering — quantity over quality</p>
+          </div>
+          <div class="role-card">
+            <div class="role-card-title">🔍 Critic</div>
+            <p>Find gaps and weaknesses in a plan you already have</p>
+          </div>
+          <div class="role-card">
+            <div class="role-card-title">😈 Devil's Advocate</div>
+            <p>Argue against your current plan — why will it fail?</p>
+          </div>
+          <div class="role-card">
+            <div class="role-card-title">🔬 Researcher</div>
+            <p>Look up known issues with similar situations (enable web search)</p>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <span class="code-label">critic role</span>
+          <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+          <pre><code>Act as a critical reviewer.
+Here is my current approach: [paste your approach].
+Find the weaknesses, blind spots, and things I'm missing.
+Be honest — I want to improve this, not hear that it's great.</code></pre>
+        </div>
+
+        <div class="code-block">
+          <span class="code-label">devil's advocate</span>
+          <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+          <pre><code>Act as a devil's advocate.
+I'm planning to [describe your plan].
+Argue against it. Tell me why this will fail.
+What am I not seeing?</code></pre>
+        </div>
+
+        <h2>One LLM, Many Interfaces</h2>
+        <p>Even within a single LLM, the interface shapes what you get. Take Claude: the <strong>Web with Connectors</strong> version can access your email and Google Drive. The <strong>Desktop App</strong> reads local files directly without uploading. <strong>Claude Code (CLI)</strong> is built for technical work and behaves more like an engineer. The <strong>Chrome Extension</strong> analyzes whatever page you have open.</p>
+        <p>Same underlying model, four meaningfully different experiences. Match the tool to the job.</p>
+
+        <div class="takeaway amber">
+          <span class="takeaway-icon">🔒</span>
+          <div class="takeaway-content">
+            <div class="takeaway-label">Privacy Note</div>
+            <p>Don't paste real customer data, internal code, or anything confidential into public AI tools. Anonymize or use synthetic examples. When in doubt, ask.</p>
+          </div>
+        </div>
+
+        <div class="exercise-box">
+          <div class="exercise-header">
+            <span class="exercise-icon">✍️</span>
+            <span class="exercise-title">Your Exercise — ~20 minutes</span>
+          </div>
+          <p class="exercise-sub">Pick a task you're currently working on. Do both parts:</p>
+          <ul class="exercise-list" id="ex-1">
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-1-0')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text"><strong>Part 1:</strong> Write one clear prompt and run the exact same prompt in both ChatGPT and Claude. What does one surface that the other doesn't? Where do they contradict?</span>
+            </li>
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-1-1')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text"><strong>Part 2:</strong> Take one LLM and run your task twice — first with your original prompt, then with the Critic role prompt. Compare the outputs.</span>
+            </li>
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-1-2')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Try <strong>LM Arena</strong> (lmarena.ai) to compare two LLMs side by side without switching tabs — free and cuts the friction significantly.</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LESSON 2 ===== -->
+  <div class="lesson-card fade-in" id="lesson-2" style="--lesson-color: #10b981; --lesson-bg: #ecfdf5;" data-lesson="2">
+    <div class="lesson-header" onclick="toggleLesson(2)">
+      <div class="lesson-num">02</div>
+      <div class="lesson-meta">
+        <div class="lesson-num-label">Lesson 2</div>
+        <div class="lesson-title">Teaching AI to Remember You</div>
+        <div class="lesson-teaser">Stop re-explaining yourself every chat. 15 minutes of setup, endless hours saved.</div>
+      </div>
+      <div class="lesson-actions">
+        <div class="lesson-time">⏱ 15 min</div>
+        <button class="lesson-btn">
+          Start Lesson <span class="lesson-btn-arrow">▾</span>
+        </button>
+      </div>
+    </div>
+    <div class="lesson-body">
+      <div class="lesson-content">
+
+        <h2>The Right Way: Set It Explicitly</h2>
+        <p>LLMs don't have a persistent brain between sessions by default — each conversation starts blank. Memory features let information carry over. The distinction between <strong>implicit</strong> (AI infers patterns from history) and <strong>explicit</strong> (you tell it what to remember) matters: explicit is always more reliable.</p>
+
+        <div class="code-block">
+          <span class="code-label">memory setup prompt</span>
+          <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+          <pre><code>Remember this about me:
+I work as a software tester.
+My tech stack is C#, Selenium 4, and .NET 8.
+I prefer bullet-pointed outputs for test cases,
+and I want output formatted so it can be pasted
+directly into our test management tool.</code></pre>
+        </div>
+
+        <p>After this, open a new chat. You shouldn't need to re-explain any of that. In Gemini, there's a dedicated "Saved Info" section where you can view and edit what the AI has stored.</p>
+
+        <h2>What to Actually Store</h2>
+        <div class="key-points" style="--lesson-color: #10b981">
+          <div class="key-point">
+            <div class="key-point-dot"></div>
+            <p><strong>Role & domain</strong> — "I'm a QA lead testing a B2B SaaS product"</p>
+          </div>
+          <div class="key-point">
+            <div class="key-point-dot"></div>
+            <p><strong>Tech stack</strong> — "We use Playwright with TypeScript, deployed on AWS"</p>
+          </div>
+          <div class="key-point">
+            <div class="key-point-dot"></div>
+            <p><strong>Team terminology</strong> — "We call end-to-end tests 'journey tests'"</p>
+          </div>
+          <div class="key-point">
+            <div class="key-point-dot"></div>
+            <p><strong>Output format</strong> — tables, bullets, numbered steps, detail level</p>
+          </div>
+          <div class="key-point">
+            <div class="key-point-dot"></div>
+            <p><strong>Current project</strong> — "Testing the new user onboarding flow for v4.2"</p>
+          </div>
+          <div class="key-point">
+            <div class="key-point-dot"></div>
+            <p><strong>Documentation style</strong> — technical or business-readable?</p>
+          </div>
+        </div>
+
+        <h2>Tone of Voice & Output Format</h2>
+        <p>AI doesn't automatically adapt to your voice — it defaults to "confident, structured, slightly corporate." Once you tell it what you want, ChatGPT and Claude both follow style direction well.</p>
+
+        <div class="code-block">
+          <span class="code-label">style + format prompt</span>
+          <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+          <pre><code>Write a summary of these test results for a team standup.
+Audience: developers and a product manager, no testing jargon.
+Tone: direct, brief, no filler.
+Format: 3 bullet points max. Each bullet is one sentence.
+Don't start with "Here are" or "This summary".
+
+Test results to summarize:
+[paste your test results here]</code></pre>
+        </div>
+
+        <div class="takeaway green">
+          <span class="takeaway-icon">🧠</span>
+          <div class="takeaway-content">
+            <div class="takeaway-label">Memory vs RAG</div>
+            <p>Memory is like RAM — fast, limited, used in every session. RAG (custom assistants with uploaded docs from Lesson 4) is like a hard drive — larger capacity, looked up on demand. Both have their place and work well together.</p>
+          </div>
+        </div>
+
+        <div class="takeaway amber">
+          <span class="takeaway-icon">🗓️</span>
+          <div class="takeaway-content">
+            <div class="takeaway-label">Maintenance Tip</div>
+            <p>Memory isn't forever. Projects end, stacks change, old context becomes noise. Review your stored memory every few months and clean out anything stale.</p>
+          </div>
+        </div>
+
+        <div class="exercise-box">
+          <div class="exercise-header">
+            <span class="exercise-icon">✍️</span>
+            <span class="exercise-title">Your Exercise — ~15 minutes</span>
+          </div>
+          <p class="exercise-sub">Do this now. Every AI session from this point on will start with a head start.</p>
+          <ul class="exercise-list" id="ex-2">
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-2-0')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Open ChatGPT or Claude and set your context explicitly: role, tech stack, output preferences. Keep it to 3–5 sentences.</span>
+            </li>
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-2-1')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Start a new conversation and ask something testing-related without providing any background. See what it already knows.</span>
+            </li>
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-2-2')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Review stored memory: ChatGPT → Settings → Personalization → Memory. Claude → Settings → Activity. Edit or remove anything outdated.</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LESSON 3 ===== -->
+  <div class="lesson-card fade-in" id="lesson-3" style="--lesson-color: #f59e0b; --lesson-bg: #fffbeb;" data-lesson="3">
+    <div class="lesson-header" onclick="toggleLesson(3)">
+      <div class="lesson-num">03</div>
+      <div class="lesson-meta">
+        <div class="lesson-num-label">Lesson 3</div>
+        <div class="lesson-title">Stop Describing Screenshots — Just Send Them</div>
+        <div class="lesson-teaser">AI can see. A screenshot conveys more than 2000 tokens of text description. Start using this.</div>
+      </div>
+      <div class="lesson-actions">
+        <div class="lesson-time">⏱ 15 min</div>
+        <button class="lesson-btn">
+          Start Lesson <span class="lesson-btn-arrow">▾</span>
+        </button>
+      </div>
+    </div>
+    <div class="lesson-body">
+      <div class="lesson-content">
+
+        <h2>A Picture Is Worth More Than You Think</h2>
+        <p>When you upload a screenshot to an AI, you're giving it roughly <strong>2,000 to 5,000 tokens of information</strong> in a format that often conveys more than the equivalent amount of text. Writing about a UI bug in words is harder, slower, and less accurate than just screenshotting it and asking the AI what's wrong.</p>
+
+        <div class="code-block">
+          <span class="code-label">visual review prompt</span>
+          <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+          <pre><code>Act as a testing expert.
+Review this screenshot and report any accessibility,
+usability, and UI issues you notice.
+Be specific.
+Mention which elements are affected and why it's a problem.</code></pre>
+        </div>
+
+        <h2>What Images Are Good For</h2>
+        <div class="key-points" style="--lesson-color: #f59e0b">
+          <div class="key-point">
+            <div class="key-point-dot"></div>
+            <p><strong>Issue detection</strong> — accessibility, visual regressions, anything hard to articulate</p>
+          </div>
+          <div class="key-point">
+            <div class="key-point-dot"></div>
+            <p><strong>Comparing states</strong> — before/after a deploy, ask AI to describe differences</p>
+          </div>
+          <div class="key-point">
+            <div class="key-point-dot"></div>
+            <p><strong>Design validation</strong> — wireframe vs. implementation: does it match?</p>
+          </div>
+          <div class="key-point">
+            <div class="key-point-dot"></div>
+            <p><strong>Bug report writing</strong> — upload the bug, get a consistent, complete description</p>
+          </div>
+        </div>
+
+        <h2>Voice: Underused and Actually Useful</h2>
+        <p>Typing is slower than speaking. For complex testing scenarios — edge cases, long sequences of steps, convoluted requirements — consider voice input instead. <strong>ChatGPT's Advanced Voice Mode</strong> lets you have a real-time conversation. <strong>Claude</strong> has voice input in its mobile app.</p>
+
+        <div class="takeaway amber">
+          <span class="takeaway-icon">🌐</span>
+          <div class="takeaway-content">
+            <div class="takeaway-label">Pro Tip</div>
+            <p>If you're a non-native English speaker dictating in English but your phone is set to German, transcription quality suffers. Switch your device language to match the language you're speaking — the difference can be significant.</p>
+          </div>
+        </div>
+
+        <h2>Screen Sharing and Live Analysis</h2>
+        <p>ChatGPT's Advanced Voice Mode can analyze what's on your screen while you talk to it. Claude's mobile app supports visual input from your camera. For quick walkthroughs of a content-heavy page, the ability to share your screen and ask "does this make sense?" can save meaningful time.</p>
+
+        <div class="takeaway blue">
+          <span class="takeaway-icon">⚠️</span>
+          <div class="takeaway-content">
+            <div class="takeaway-label">Limitation</div>
+            <p>AI vision isn't infallible. It can miss things, misread text, or misinterpret visual hierarchy. Treat AI-generated issue lists as a first pass to augment your own review — not a replacement for it.</p>
+          </div>
+        </div>
+
+        <div class="exercise-box">
+          <div class="exercise-header">
+            <span class="exercise-icon">✍️</span>
+            <span class="exercise-title">Your Exercise — do at least one</span>
+          </div>
+          <ul class="exercise-list" id="ex-3">
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-3-0')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Next time you find a visual bug, take a screenshot and paste it into Claude or ChatGPT: "Act as a tester. What issues do you see in this screenshot?" Compare what it finds to what you noticed.</span>
+            </li>
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-3-1')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Try voice input for your next complex prompt. Use ChatGPT's voice mode or just dictate via your phone. Is it faster? If quality is poor, try switching device language.</span>
+            </li>
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-3-2')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Upload a screenshot of a UI you've been testing and ask specifically for an accessibility review. You might be surprised what it flags.</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LESSON 4 ===== -->
+  <div class="lesson-card fade-in" id="lesson-4" style="--lesson-color: #8b5cf6; --lesson-bg: #f5f3ff;" data-lesson="4">
+    <div class="lesson-header" onclick="toggleLesson(4)">
+      <div class="lesson-num">04</div>
+      <div class="lesson-meta">
+        <div class="lesson-num-label">Lesson 4</div>
+        <div class="lesson-title">Build an AI That Actually Knows Your Job</div>
+        <div class="lesson-teaser">Build it once, use it forever. Custom assistants eliminate the prompting tax from every conversation.</div>
+      </div>
+      <div class="lesson-actions">
+        <div class="lesson-time">⏱ 20 min</div>
+        <button class="lesson-btn">
+          Start Lesson <span class="lesson-btn-arrow">▾</span>
+        </button>
+      </div>
+    </div>
+    <div class="lesson-body">
+      <div class="lesson-content">
+
+        <h2>The Problem with Generic AI</h2>
+        <p>Every AI tool was built for everyone. That's its strength, and its limitation. It doesn't know your team's definition of "done," your bug report template, or the quirks of the system you test. Custom assistants move that work out of every conversation and into a one-time setup.</p>
+
+        <h2>The Three Ingredients</h2>
+        <div class="key-points" style="--lesson-color: #8b5cf6">
+          <div class="key-point">
+            <div class="key-point-dot"></div>
+            <p><strong>Instructions</strong> — the role, behavior, output format, what it should and shouldn't do. Quality here determines quality everywhere.</p>
+          </div>
+          <div class="key-point">
+            <div class="key-point-dot"></div>
+            <p><strong>Knowledge base</strong> — upload PDFs, guidelines, past test plans, acceptance criteria templates. AI draws on these when answering.</p>
+          </div>
+          <div class="key-point">
+            <div class="key-point-dot"></div>
+            <p><strong>Capabilities</strong> — web search, code execution, image analysis: turn on/off. For testing assistants: web search off, image analysis on.</p>
+          </div>
+        </div>
+
+        <h2>Where to Build</h2>
+        <div class="role-grid">
+          <div class="role-card">
+            <div class="role-card-title">🤖 ChatGPT</div>
+            <p>"Create a GPT" in the sidebar. Large marketplace to browse for inspiration.</p>
+          </div>
+          <div class="role-card">
+            <div class="role-card-title">🟠 Claude</div>
+            <p>"Projects" in the sidebar. Custom instructions + knowledge files scoped to a use case.</p>
+          </div>
+          <div class="role-card">
+            <div class="role-card-title">💎 Gemini</div>
+            <p>"Gems" at gemini.google.com. Similar concept, Google's ecosystem.</p>
+          </div>
+          <div class="role-card">
+            <div class="role-card-title">🔬 AI Studio</div>
+            <p>System Instructions + saved configurations. Good for iterating before committing.</p>
+          </div>
+        </div>
+
+        <h2>Requirements Analyzer — Complete Instructions</h2>
+        <p>Here's a complete, ready-to-use example. Paste this directly as the system instructions for your assistant:</p>
+
+        <div class="code-block">
+          <span class="code-label">custom assistant instructions</span>
+          <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+          <pre><code>Act as an expert software tester who regularly
+reviews feature requirements for testability.
+
+When given a requirement, provide the following
+in this order:
+1. Clarification questions: things you'd need
+   answered before you could test this properly
+2. Key notes: important implications a tester
+   should be aware of
+3. Risks: what could go wrong, what's likely to break
+4. Test ideas: concrete scenarios worth testing
+5. Requirement gaps: anything that's missing,
+   ambiguous, or contradictory
+
+Be specific. Don't pad the output with generic advice.
+If something in the requirement is unclear, say so directly.
+
+Wait for the user to provide a requirement before responding.</code></pre>
+        </div>
+
+        <p>Notice the last line: <em>"Wait for the user to provide a requirement before responding."</em> Without it, the AI might try to be helpful by generating a generic example. That instruction keeps it focused.</p>
+
+        <h2>Other Assistants Worth Building</h2>
+        <div class="key-points" style="--lesson-color: #8b5cf6">
+          <div class="key-point"><div class="key-point-dot"></div><p><strong>Bug Report Writer</strong> — describe what happened, get a formatted bug report in your team's template</p></div>
+          <div class="key-point"><div class="key-point-dot"></div><p><strong>Test Data Generator</strong> — specify what you need, get structured edge-case data back</p></div>
+          <div class="key-point"><div class="key-point-dot"></div><p><strong>Root Cause Helper</strong> — describe a pattern of failures, get hypotheses about causes</p></div>
+          <div class="key-point"><div class="key-point-dot"></div><p><strong>Standup Summarizer</strong> — paste test results, get a stakeholder-ready summary</p></div>
+        </div>
+
+        <div class="takeaway purple">
+          <span class="takeaway-icon">🔗</span>
+          <div class="takeaway-content">
+            <div class="takeaway-label">Team Multiplier</div>
+            <p>Custom assistants are a bridge between people who know how to prompt and people who don't. Once you've built something that works well, sharing it with the team means everyone benefits — not just the person who figured out the right prompt.</p>
+          </div>
+        </div>
+
+        <div class="takeaway amber">
+          <span class="takeaway-icon">🔒</span>
+          <div class="takeaway-content">
+            <div class="takeaway-label">Privacy</div>
+            <p>Don't upload anything you wouldn't want stored on an external platform. Internal architecture docs, customer data, proprietary test plans — use anonymized or generalized versions when building knowledge bases.</p>
+          </div>
+        </div>
+
+        <div class="exercise-box">
+          <div class="exercise-header">
+            <span class="exercise-icon">✍️</span>
+            <span class="exercise-title">Your Exercise — build something concrete</span>
+          </div>
+          <ul class="exercise-list" id="ex-4">
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-4-0')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Identify one repetitive task in your daily testing work — something you do at least weekly with a consistent pattern. That's your candidate.</span>
+            </li>
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-4-1')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Browse the ChatGPT GPT Store and search for "software testing" or "QA". Look at what others have built for ideas and instruction patterns.</span>
+            </li>
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-4-2')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Build a Requirements Analyzer using the instruction template above. Test it on a real requirement from your current sprint. Note what needs refinement.</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LESSON 5 ===== -->
+  <div class="lesson-card fade-in" id="lesson-5" style="--lesson-color: #ef4444; --lesson-bg: #fef2f2;" data-lesson="5">
+    <div class="lesson-header" onclick="toggleLesson(5)">
+      <div class="lesson-num">05</div>
+      <div class="lesson-meta">
+        <div class="lesson-num-label">Lesson 5</div>
+        <div class="lesson-title">AI Hallucinations & The Power of Good Context</div>
+        <div class="lesson-teaser">AI doesn't lie — it pattern-matches. Understanding this lets you prevent hallucinations almost entirely.</div>
+      </div>
+      <div class="lesson-actions">
+        <div class="lesson-time">⏱ 20 min</div>
+        <button class="lesson-btn">
+          Start Lesson <span class="lesson-btn-arrow">▾</span>
+        </button>
+      </div>
+    </div>
+    <div class="lesson-body">
+      <div class="lesson-content">
+
+        <h2>What's Actually Happening</h2>
+        <p>LLMs don't retrieve facts from a database. They <strong>generate text by predicting the next word</strong> based on patterns in training data. When the model doesn't have enough reliable training data for a specific question, it fills the gap with something plausible-sounding — whether or not it's true. The confidence doesn't correlate with accuracy.</p>
+
+        <p>Hallucinations are more likely with:</p>
+        <div class="key-points" style="--lesson-color: #ef4444">
+          <div class="key-point"><div class="key-point-dot"></div><p>Vague or underspecified prompts — the less context, the more the AI fills in</p></div>
+          <div class="key-point"><div class="key-point-dot"></div><p>Questions about recent events or very specific domain knowledge</p></div>
+          <div class="key-point"><div class="key-point-dot"></div><p>Edge cases that weren't well-represented in training data</p></div>
+          <div class="key-point"><div class="key-point-dot"></div><p>Prompts that implicitly reward confident-sounding output over accurate output</p></div>
+        </div>
+
+        <h2>Chain of Verification (CoVe)</h2>
+        <p>The most effective technique for reducing hallucinations in testing contexts. Instead of just producing output, ask the AI to produce output <em>and then check it</em> against specific criteria.</p>
+
+        <div class="code-block">
+          <span class="code-label">without verification ❌</span>
+          <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+          <pre><code>Generate test cases for the login functionality.</code></pre>
+        </div>
+
+        <div class="code-block">
+          <span class="code-label">with Chain of Verification ✅</span>
+          <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+          <pre><code>Act as a software tester.
+Design test cases for the login functionality
+using chain of verification:
+1. For each test case, state what you're testing
+   and why it matters
+2. Verify whether each test is realistic and
+   actually needed
+3. Verify whether each test is valid for this
+   specific context:
+   [describe your actual system]
+Flag any assumptions you're making.</code></pre>
+        </div>
+
+        <h2>The AI Maturity Staircase</h2>
+        <div class="staircase">
+          <ul class="stair-steps">
+            <li class="stair-step level-1">
+              <div class="stair-step-num">1</div>
+              <div class="stair-step-content">
+                <div class="stair-step-title">Basic Chat</div>
+                <div class="stair-step-desc">Type questions, hope for something useful. Inconsistent quality.</div>
+              </div>
+            </li>
+            <li class="stair-step level-2">
+              <div class="stair-step-num">2</div>
+              <div class="stair-step-content">
+                <div class="stair-step-title">Prompt Engineering</div>
+                <div class="stair-step-desc">Structured, deliberate requests. Better questions, better answers.</div>
+              </div>
+            </li>
+            <li class="stair-step level-3">
+              <div class="stair-step-num">3</div>
+              <div class="stair-step-content">
+                <div class="stair-step-title">Context Engineering</div>
+                <div class="stair-step-desc">Deliberately providing the right information and constraints. Biggest gains are here.</div>
+              </div>
+            </li>
+            <li class="stair-step level-4">
+              <div class="stair-step-num">4</div>
+              <div class="stair-step-content">
+                <div class="stair-step-title">Agentic Engineering</div>
+                <div class="stair-step-desc">AI uses tools and takes real actions. Covered in Lesson 8.</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <h2>Teaching the AI to Say "I Don't Know"</h2>
+
+        <div class="code-block">
+          <span class="code-label">uncertainty instruction</span>
+          <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+          <pre><code>If you don't have enough information to answer
+accurately, say so.
+Do not guess or extrapolate.
+If the requirements are incomplete, respond with:
+"Requirements incomplete. Please clarify
+[specific thing] before I can generate
+accurate test cases."</code></pre>
+        </div>
+
+        <div class="takeaway blue">
+          <span class="takeaway-icon">🌡️</span>
+          <div class="takeaway-content">
+            <div class="takeaway-label">Temperature Setting</div>
+            <p>For testing work (test cases, requirements analysis, bug reports) — use <strong>lower temperature (0.3 or below)</strong>. For brainstorming — 0.7–1.0 gives more variation. Lower temperature = fewer hallucinations. You can adjust this in Google AI Studio (Lesson 7).</p>
+          </div>
+        </div>
+
+        <div class="takeaway amber">
+          <span class="takeaway-icon">💡</span>
+          <div class="takeaway-content">
+            <div class="takeaway-label">Mental Model</div>
+            <p>Think of hallucinations as a signal about prompt quality, not AI unreliability. When you get a hallucinated response, ask: "What did my prompt fail to specify?" The fix is almost always more context or more structure.</p>
+          </div>
+        </div>
+
+        <div class="exercise-box">
+          <div class="exercise-header">
+            <span class="exercise-icon">✍️</span>
+            <span class="exercise-title">Your Exercise — 10–15 minutes each</span>
+          </div>
+          <ul class="exercise-list" id="ex-5">
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-5-0')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Take a prompt you've used before that generated questionable output. Rewrite it with CoVe: ask the AI to verify each point against your actual context.</span>
+            </li>
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-5-1')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Add the "I don't know" instruction to your next complex prompt. Notice whether the output changes — does the AI flag more uncertainty?</span>
+            </li>
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-5-2')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Next time you get test cases from AI, pick two or three and verify them manually. Calibrate your own sense of when AI output is reliable and when it needs more scrutiny.</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LESSON 6 ===== -->
+  <div class="lesson-card fade-in" id="lesson-6" style="--lesson-color: #06b6d4; --lesson-bg: #ecfeff;" data-lesson="6">
+    <div class="lesson-header" onclick="toggleLesson(6)">
+      <div class="lesson-num">06</div>
+      <div class="lesson-meta">
+        <div class="lesson-num-label">Lesson 6</div>
+        <div class="lesson-title">Your Feedback Shapes AI — Here's How to Use That</div>
+        <div class="lesson-teaser">Those thumbs up/down buttons are training levers. Learn to use them to calibrate AI to your standards.</div>
+      </div>
+      <div class="lesson-actions">
+        <div class="lesson-time">⏱ 15 min</div>
+        <button class="lesson-btn">
+          Start Lesson <span class="lesson-btn-arrow">▾</span>
+        </button>
+      </div>
+    </div>
+    <div class="lesson-body">
+      <div class="lesson-content">
+
+        <h2>What RLHF Actually Is</h2>
+        <p><strong>Reinforcement Learning from Human Feedback.</strong> After an LLM generates a response, humans evaluate it. Those evaluations update the model — rewarding patterns that got positive feedback, penalizing patterns that got negative feedback. This is how ChatGPT, Claude, and Gemini were all trained and continue to be refined.</p>
+        <p>Your individual click won't reshape the model overnight, but within your own usage history, the feedback you give shapes how that tool responds to <em>you specifically</em>.</p>
+
+        <h2>When Thumbs Down Gets Interesting</h2>
+        <p>Most people click thumbs down when annoyed and move on. The more useful approach: actually tell the AI what was wrong. In ChatGPT, it asks for specifics when you click thumbs down:</p>
+
+        <div class="key-points" style="--lesson-color: #06b6d4">
+          <div class="key-point"><div class="key-point-dot"></div><p><strong>"Factually incorrect"</strong> — helps the model learn accuracy</p></div>
+          <div class="key-point"><div class="key-point-dot"></div><p><strong>"Didn't follow instructions"</strong> — helps it learn to be more literal</p></div>
+          <div class="key-point"><div class="key-point-dot"></div><p><strong>"Style wrong"</strong> — calibrates tone and format to your preferences</p></div>
+          <div class="key-point"><div class="key-point-dot"></div><p><strong>"Memory issue"</strong> — something from previous sessions is bleeding in wrong</p></div>
+        </div>
+
+        <h2>Where Testers Have an Unusual Advantage</h2>
+        <p>Most software tasks are fairly objective — code works or it doesn't, a test passes or fails. But a significant part of testing involves judgment calls that aren't binary: Is this UI intuitive enough? Is this error message clear? Is this documentation at the right level?</p>
+        <p>RLHF is particularly well-suited for training an AI on exactly these kinds of <strong>subjective preferences</strong>:</p>
+
+        <div class="role-grid">
+          <div class="role-card">
+            <div class="role-card-title">📝 Bug Reports</div>
+            <p>Wrong structure? Thumbs down + note the correct order. Format adapts over time.</p>
+          </div>
+          <div class="role-card">
+            <div class="role-card-title">📖 Documentation</div>
+            <p>Technical vs. business-readable? Consistent feedback calibrates which default you get.</p>
+          </div>
+          <div class="role-card">
+            <div class="role-card-title">📋 Test Cases</div>
+            <p>If explanations of changes help your team, upvote that pattern. It surfaces more often.</p>
+          </div>
+          <div class="role-card">
+            <div class="role-card-title">📊 Summaries</div>
+            <p>Too verbose? Too terse? Consistent feedback over weeks makes a measurable difference.</p>
+          </div>
+        </div>
+
+        <div class="takeaway blue">
+          <span class="takeaway-icon">📈</span>
+          <div class="takeaway-content">
+            <div class="takeaway-label">The Compound Effect</div>
+            <p>You don't need elaborate feedback on every interaction. The habit that makes a difference is being consistent: when you get output you really like, click thumbs up. When something is clearly off, click thumbs down and add a one-line note. Done consistently over weeks, this calibrates your AI tools to your preferences in ways that save time every day.</p>
+          </div>
+        </div>
+
+        <div class="takeaway amber">
+          <span class="takeaway-icon">🎯</span>
+          <div class="takeaway-content">
+            <div class="takeaway-label">Objective vs. Subjective</div>
+            <p>Objective facts — whether a test case is technically valid, whether code compiles — aren't improved by feedback in the same way. Fix those with better prompting and more context (Lesson 5). Feedback shines anywhere output is evaluated against preferences and judgment.</p>
+          </div>
+        </div>
+
+        <div class="exercise-box">
+          <div class="exercise-header">
+            <span class="exercise-icon">✍️</span>
+            <span class="exercise-title">Your Exercise — start the habit this week</span>
+          </div>
+          <ul class="exercise-list" id="ex-6">
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-6-0')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Next time you use ChatGPT or Claude and get a response formatted exactly how you like it — click thumbs up. It takes one second. Build the habit.</span>
+            </li>
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-6-1')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">If you get a response that's too verbose, vague, or wrong format — click thumbs down and specify which of those it was. Notice whether subsequent responses improve.</span>
+            </li>
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-6-2')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Identify one subjective quality standard your team cares about: documentation clarity, bug report format, or test case structure. Use it as a feedback filter for two weeks.</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BONUS LESSONS HEADER ===== -->
+  <div class="fade-in" style="text-align: center; padding: 48px 0 24px;">
+    <div class="section-label" style="display: inline-block;">Bonus Content</div>
+    <h2 class="section-title" style="margin-top: 8px;">Going Further</h2>
+    <p style="font-size: 1rem; color: var(--text-muted); max-width: 500px; margin: 12px auto 0;">Not required. Both worth your time if you're curious about where this is heading.</p>
+  </div>
+
+  <!-- ===== LESSON 7 ===== -->
+  <div class="lesson-card fade-in" id="lesson-7" style="--lesson-color: #f59e0b; --lesson-bg: #fffbeb;" data-lesson="7">
+    <div class="lesson-header" onclick="toggleLesson(7)">
+      <div class="lesson-num">07</div>
+      <div class="lesson-meta">
+        <div class="lesson-num-label">Bonus Lesson 7 <span class="lesson-bonus-tag">⭐ Bonus</span></div>
+        <div class="lesson-title">Google AI Studio — A Power Tool for Serious Prompting</div>
+        <div class="lesson-teaser">The free power tool most teams ignore. Compare models, build apps, see the controls nobody else touches.</div>
+      </div>
+      <div class="lesson-actions">
+        <div class="lesson-time">⏱ 30 min</div>
+        <button class="lesson-btn">
+          Start Lesson <span class="lesson-btn-arrow">▾</span>
+        </button>
+      </div>
+    </div>
+    <div class="lesson-body">
+      <div class="lesson-content">
+
+        <h2>Why the Chat Interface Isn't Enough</h2>
+        <p>Standard chat is great for quick tasks. But if you're trying to develop a prompt you'll use repeatedly, or understand why the same prompt produces wildly different results sometimes, a chat window doesn't give you the tools to investigate or iterate systematically.</p>
+        <p>Think of it like the difference between writing code in Notepad versus in an IDE. <strong>Google AI Studio</strong> is the IDE — free, full-featured, with controls that even paid tools don't always offer.</p>
+
+        <h2>Compare Mode — The Feature That Changes Everything</h2>
+        <p>Run the same prompt through two different models (or the same model with different settings) side by side. Want to know whether higher or lower temperature produces better test cases? Run them side by side. Want to compare Gemini 2.5 Pro vs. Flash? You get both outputs simultaneously without copying between tabs.</p>
+
+        <div class="takeaway amber">
+          <span class="takeaway-icon">⭐</span>
+          <div class="takeaway-content">
+            <div class="takeaway-label">Access</div>
+            <p>Google AI Studio is <strong>free</strong> at <strong>aistudio.google.com</strong>. No subscription required. Just a Google account. The paid tier (Gemini API) is needed for high-volume use — for exploration and team tooling, the free tier is plenty.</p>
+          </div>
+        </div>
+
+        <h2>System Instructions: Define the AI's Persona</h2>
+        <p>On the right side of the interface, set System Instructions that frame every response in a conversation — the AI's role, tone, and behavioral constraints without repeating them in every message. It's a great place to experiment with instructions before committing them to a permanent custom assistant.</p>
+
+        <div class="code-block">
+          <span class="code-label">system instructions example</span>
+          <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+          <pre><code>You are an expert software tester specializing
+in requirements analysis.
+When given a requirement, always identify
+testability issues before suggesting test cases.
+Use clear, numbered lists for test cases.
+Keep responses concise. No padding.</code></pre>
+        </div>
+
+        <h2>Visible Controls: Temperature & Token Count</h2>
+        <div class="key-points" style="--lesson-color: #f59e0b">
+          <div class="key-point"><div class="key-point-dot"></div><p><strong>Temperature slider</strong> — visible and adjustable. 0.3 for precise work, 0.7–1.0 for brainstorming.</p></div>
+          <div class="key-point"><div class="key-point-dot"></div><p><strong>Token count</strong> — real-time display of your prompt's size. Helps you stay within context limits and understand prompt cost.</p></div>
+          <div class="key-point"><div class="key-point-dot"></div><p><strong>Model selection</strong> — switch between Gemini versions, Flash, Pro, and experimental models instantly.</p></div>
+        </div>
+
+        <h2>Build Apps — Prompts That Do Something</h2>
+        <p>The most underrated feature: "Build Apps" converts your prompt into a working web application anyone can use. Write a prompt describing a test data generator, and AI Studio builds an interactive app with a form where you input parameters. You've turned a prompt into a team tool — in minutes.</p>
+
+        <div class="code-block">
+          <span class="code-label">test data generator app prompt</span>
+          <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+          <pre><code>Act as a software testing expert.
+Create a test data generator for user registration forms.
+Let the user specify:
+- Number of records
+- Types of edge cases to include
+  (invalid emails, special characters, boundary lengths)
+- Output format (CSV or JSON)
+
+Generate realistic, varied test data that covers
+both happy path and edge cases.</code></pre>
+        </div>
+
+        <h2>The Same Ideas, Three Playgrounds</h2>
+        <div class="role-grid">
+          <div class="role-card">
+            <div class="role-card-title">🔬 Google AI Studio</div>
+            <p>Free, full-featured, unique compare mode. Best starting point.</p>
+          </div>
+          <div class="role-card">
+            <div class="role-card-title">🟠 Anthropic Console</div>
+            <p>console.anthropic.com — for Claude. Workbench for iterating prompts with full control.</p>
+          </div>
+          <div class="role-card">
+            <div class="role-card-title">🤖 OpenAI Playground</div>
+            <p>platform.openai.com/playground — for GPT. System messages, temperature, model selection.</p>
+          </div>
+        </div>
+
+        <div class="exercise-box">
+          <div class="exercise-header">
+            <span class="exercise-icon">✍️</span>
+            <span class="exercise-title">Your Exercise — ~30 minutes</span>
+          </div>
+          <ul class="exercise-list" id="ex-7">
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-7-0')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Go to <strong>aistudio.google.com</strong> and run a prompt you use regularly. Then enable Compare mode with a different temperature setting or model. Look for meaningful differences.</span>
+            </li>
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-7-1')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Try the Build Apps feature with a simple testing task: bug report formatter, test case template generator, or checklist builder. Share the app link with one other person.</span>
+            </li>
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-7-2')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Set up System Instructions with your testing context. Save the session. Then try the same System Instructions in the Anthropic Console Workbench — compare how the two models respond.</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LESSON 8 ===== -->
+  <div class="lesson-card fade-in" id="lesson-8" style="--lesson-color: #3b82f6; --lesson-bg: #eff6ff;" data-lesson="8">
+    <div class="lesson-header" onclick="toggleLesson(8)">
+      <div class="lesson-num">08</div>
+      <div class="lesson-meta">
+        <div class="lesson-num-label">Bonus Lesson 8 <span class="lesson-bonus-tag">⭐ Bonus</span></div>
+        <div class="lesson-title">From Chat to Coworker</div>
+        <div class="lesson-teaser">AI that doesn't just answer — it acts. Browses the web, runs code, takes real steps. Here's what's actually real today.</div>
+      </div>
+      <div class="lesson-actions">
+        <div class="lesson-time">⏱ 20 min</div>
+        <button class="lesson-btn">
+          Start Lesson <span class="lesson-btn-arrow">▾</span>
+        </button>
+      </div>
+    </div>
+    <div class="lesson-body">
+      <div class="lesson-content">
+
+        <h2>What Is Agentic AI?</h2>
+        <p>Regular AI works like a very well-read colleague who can only communicate in writing. You ask, it responds. The interaction starts and ends there.</p>
+        <p><strong>Agentic AI is different.</strong> Instead of just answering, it can take actions: browse a live website and read what's actually on it today, run a piece of code and report what happened, call an external API and process the response, chain multiple steps together — plan, act, observe, adjust, continue.</p>
+
+        <div class="takeaway blue">
+          <span class="takeaway-icon">🤔</span>
+          <div class="takeaway-content">
+            <div class="takeaway-label">The Key Difference</div>
+            <p>Asking "what does the current OWASP Top 10 look like?" vs. asking an agent to <em>go look it up, compare it to last year's version, and come back with a clear summary of what changed</em>. The second is a task with real steps that require interacting with the world.</p>
+          </div>
+        </div>
+
+        <h2>What You Already Have Access To</h2>
+        <div class="key-points" style="--lesson-color: #3b82f6">
+          <div class="key-point"><div class="key-point-dot"></div><p><strong>ChatGPT Pro</strong> — web browsing opens a real browser and reads live pages. Code interpreter executes actual Python. These are real actions, not simulations.</p></div>
+          <div class="key-point"><div class="key-point-dot"></div><p><strong>Claude with tool use</strong> — can browse the web, run code, interact with external systems in the right configurations.</p></div>
+          <div class="key-point"><div class="key-point-dot"></div><p><strong>Claude Code (CLI)</strong> — reads and writes files on your local machine, runs terminal commands, works through multi-step tasks with a degree of autonomy that feels genuinely different.</p></div>
+          <div class="key-point"><div class="key-point-dot"></div><p><strong>Google AI Studio</strong> — function calling lets you define what capabilities the AI can use, then let it decide when to invoke them.</p></div>
+        </div>
+
+        <h2>The Building Blocks</h2>
+        <div class="role-grid">
+          <div class="role-card">
+            <div class="role-card-title">🔧 Tool Use</div>
+            <p>AI calls externalcapabilities — web search, code runner, file system — and incorporates results into its response.</p>
+          </div>
+          <div class="role-card">
+            <div class="role-card-title">📡 Function Calling</div>
+            <p>You define what functions exist ("get_ticket_status") and the model invokes them when relevant. Foundation for wiring AI to real systems.</p>
+          </div>
+          <div class="role-card">
+            <div class="role-card-title">🔗 Multi-step Reasoning</div>
+            <p>Plan a sequence of actions, execute the first step, look at what happened, decide what to do next — until the task is done.</p>
+          </div>
+          <div class="role-card">
+            <div class="role-card-title">🔌 MCP</div>
+            <p>Model Context Protocol — an emerging standard for how AI models connect to external tools and data sources consistently.</p>
+          </div>
+        </div>
+
+        <h2>Reality Check: What Works Today vs. What's Hype</h2>
+        <div class="key-points" style="--lesson-color: #3b82f6">
+          <div class="key-point"><div class="key-point-dot"></div><p><strong>Web browsing in ChatGPT/Claude</strong> ✅ Works well, useful today. Great for current security advisories, live docs, competitor features.</p></div>
+          <div class="key-point"><div class="key-point-dot"></div><p><strong>Code execution in ChatGPT</strong> ✅ Solid. Great for generating and immediately running scripts, analyzing files, doing calculations.</p></div>
+          <div class="key-point"><div class="key-point-dot"></div><p><strong>Claude Code</strong> ✅ Powerful for developer workflows. Requires comfort with the terminal. Worth it if you're in that environment.</p></div>
+          <div class="key-point"><div class="key-point-dot"></div><p><strong>Fully autonomous AI testing agents</strong> ⚠️ Still early. Demos look impressive. Reliability in real, messy environments is inconsistent. Watch, don't deploy in production yet.</p></div>
+        </div>
+
+        <div class="takeaway blue">
+          <span class="takeaway-icon">🔌</span>
+          <div class="takeaway-content">
+            <div class="takeaway-label">MCP — Worth Knowing</div>
+            <p>If you hear people talking about "MCP servers" or "AI integrations" in the coming months — this is what they mean. Model Context Protocol is an emerging standard that defines how AI models connect to external tools and data sources in a consistent way. You don't need the technical details yet, just the concept.</p>
+          </div>
+        </div>
+
+        <div class="code-block">
+          <span class="code-label">option A — web search</span>
+          <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+          <pre><code>Search the web for the current OWASP Top 10 and give me
+a clear summary of what changed compared to the previous version.
+Be specific about what moved up the list, what dropped off,
+and what's newly included.</code></pre>
+        </div>
+
+        <div class="code-block">
+          <span class="code-label">option B — code execution</span>
+          <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+          <pre><code>Write a Python script that generates 50 realistic test users,
+each with a name, email address, age between 18 and 65,
+and a country selected from a realistic distribution.
+Then run it and show me the first 10 results.</code></pre>
+        </div>
+
+        <div class="takeaway amber">
+          <span class="takeaway-icon">🔒</span>
+          <div class="takeaway-content">
+            <div class="takeaway-label">Heads Up</div>
+            <p>When using AI tools that browse the web or run code, be thoughtful about what you're asking them to access or generate. Agentic tools have more reach than a standard chat — which is exactly why they're useful, and why awareness matters.</p>
+          </div>
+        </div>
+
+        <div class="exercise-box">
+          <div class="exercise-header">
+            <span class="exercise-icon">✍️</span>
+            <span class="exercise-title">Your Exercise — notice the difference</span>
+          </div>
+          <ul class="exercise-list" id="ex-8">
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-8-0')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Try Option A (OWASP web search) in ChatGPT or Claude with web search enabled. Watch whether it actually opens a browser and reads live pages.</span>
+            </li>
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-8-1')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Try Option B (test user generation) with code execution enabled. Compare that experience to asking the same question in plain chat without tools.</span>
+            </li>
+            <li class="exercise-item" onclick="toggleExercise(this, 'ex-8-2')">
+              <div class="exercise-checkbox"><span class="exercise-checkbox-check">✓</span></div>
+              <span class="exercise-text">Think about one workflow in your team that could benefit from agentic AI: querying your staging API, cross-referencing test reports with Jira tickets, or executing test steps. Write down what it would look like.</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div><!-- end lessons-container -->
+
+<!-- COMPLETION SECTION -->
+<div class="completion-section" id="completion-section">
+  <div class="confetti-container" id="confetti-container"></div>
+  <div class="completion-inner">
+    <span class="completion-trophy">🏆</span>
+    <h2 class="completion-title">You did it.</h2>
+    <p class="completion-sub">All 8 lessons down. You've gone from basic prompting to understanding context engineering, custom assistants, hallucination control, and agentic AI. That puts you ahead of most people using these tools.</p>
+    <div class="completion-badges">
+      <span class="completion-badge">🧠 Multi-LLM Thinker</span>
+      <span class="completion-badge">🤖 Custom AI Builder</span>
+      <span class="completion-badge">🔍 Hallucination Spotter</span>
+      <span class="completion-badge">🚀 Agentic Explorer</span>
+    </div>
+    <p style="color: rgba(255,255,255,0.5); font-size: 0.85rem;">Keep experimenting. Every prompt is a small test. Every session where you notice what worked and what didn't is a step forward.</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-logo">🐨 Koala Workshop</div>
+    <p class="footer-meta">Prompting Fundamentals · Built for QA engineers who want to actually use AI</p>
+    <div class="footer-links">
+      <a href="index.html">← Classic View</a>
+      <a href="#overview">Back to top ↑</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const STORAGE_KEY_PROGRESS = 'pf_progress';
+const STORAGE_KEY_THEME    = 'pf_theme';
+const STORAGE_KEY_CHECKS   = 'pf_checks';
+const TOTAL_LESSONS = 8;
+
+function loadProgress() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY_PROGRESS) || '{}'); } catch(e) { return {}; }
+}
+function saveProgress(p) { localStorage.setItem(STORAGE_KEY_PROGRESS, JSON.stringify(p)); }
+function loadChecks() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY_CHECKS) || '{}'); } catch(e) { return {}; }
+}
+function saveChecks(c) { localStorage.setItem(STORAGE_KEY_CHECKS, JSON.stringify(c)); }
+
+function initTheme() {
+  const saved = localStorage.getItem(STORAGE_KEY_THEME);
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = saved || (prefersDark ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', theme);
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem(STORAGE_KEY_THEME, next);
+}
+
+initTheme();
+
+function toggleLesson(num) {
+  const card = document.getElementById('lesson-' + num);
+  const wasOpen = card.classList.contains('open');
+  card.classList.toggle('open');
+  if (!wasOpen) {
+    const progress = loadProgress();
+    progress[num] = true;
+    saveProgress(progress);
+    updateProgressUI();
+    setTimeout(() => { card.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 100);
+  }
+}
+
+function updateProgressUI() {
+  const progress = loadProgress();
+  const completed = Object.keys(progress).filter(k => progress[k]).length;
+  const pct = (completed / TOTAL_LESSONS) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-count').textContent = completed + ' of ' + TOTAL_LESSONS + ' lessons opened';
+  for (let i = 1; i <= TOTAL_LESSONS; i++) {
+    const dot = document.getElementById('pdot-' + i);
+    const navDot = document.getElementById('nav-' + i);
+    if (progress[i]) {
+      dot && dot.classList.add('done');
+      navDot && navDot.classList.add('completed');
+    } else {
+      dot && dot.classList.remove('done');
+      navDot && navDot.classList.remove('completed');
+    }
+  }
+  if (completed >= TOTAL_LESSONS) {
+    const completionEl = document.getElementById('completion-section');
+    if (!completionEl.classList.contains('visible')) {
+      completionEl.classList.add('visible');
+      completionEl.scrollIntoView({ behavior: 'smooth' });
+      fireConfetti();
+    }
+  }
+}
+
+function toggleExercise(item, key) {
+  item.classList.toggle('checked');
+  const checks = loadChecks();
+  checks[key] = item.classList.contains('checked');
+  saveChecks(checks);
+}
+
+function restoreChecks() {
+  const checks = loadChecks();
+  Object.entries(checks).forEach(([key, value]) => {
+    if (value) {
+      const items = document.querySelectorAll('.exercise-item');
+      items.forEach(item => {
+        const onclick = item.getAttribute('onclick') || '';
+        if (onclick.includes("'" + key + "'")) {
+          item.classList.add('checked');
+        }
+      });
+    }
+  });
+}
+
+function copyCode(btn) {
+  const pre = btn.parentElement.querySelector('pre');
+  const text = pre.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '✅ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.innerHTML = '✅ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.innerHTML = '📋 Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+function initScrollAnimations() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+}
+
+function fireConfetti() {
+  const container = document.getElementById('confetti-container');
+  const colors = ['#3b82f6', '#f59e0b', '#10b981', '#8b5cf6', '#ef4444', '#06b6d4', '#ffffff'];
+  const shapes = ['■', '●', '▲', '◆', '★'];
+  for (let i = 0; i < 120; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+    const x = Math.random() * 100;
+    const delay = Math.random() * 3;
+    const duration = 2.5 + Math.random() * 3;
+    const size = 6 + Math.random() * 10;
+    piece.style.cssText = `left:${x}%;top:-20px;color:${color};font-size:${size}px;animation-duration:${duration}s;animation-delay:${delay}s;`;
+    piece.textContent = shape;
+    container.appendChild(piece);
+  }
+  setTimeout(() => { container.innerHTML = ''; }, 7000);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  updateProgressUI();
+  restoreChecks();
+  initScrollAnimations();
+  const progress = loadProgress();
+  Object.keys(progress).forEach(num => {
+    if (progress[num]) {
+      const card = document.getElementById('lesson-' + num);
+      if (card) card.classList.add('open');
+    }
+  });
+  const completed = Object.keys(progress).filter(k => progress[k]).length;
+  if (completed >= TOTAL_LESSONS) {
+    document.getElementById('completion-section').classList.add('visible');
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'd' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+    const active = document.activeElement;
+    if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) return;
+    toggleTheme();
+  }
+});
+</script>
+</body>
+</html>
